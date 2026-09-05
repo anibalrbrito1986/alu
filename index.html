@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="author" content="AB Creaciones Electricas S.A.S - Ing. Anibal Brito Vidal">
-<meta name="description" content="Diseno, verificacion RETILAP, presupuesto y asistente de alumbrado publico. Carga trazados KML/KMZ. Funciona sin conexion.">
+<meta name="description" content="Diseno, verificacion RETILAP, presupuesto, recorrido 3D y asistente de alumbrado publico. Funciona sin conexion.">
 <style>html{color-scheme:light dark}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Alumbrado Vía Las Flores</title>
 <style>
@@ -155,6 +155,20 @@ table.ver tr:last-child td{border-bottom:0}
 .verdict.ok{background:rgba(0,147,126,.10);color:var(--teal)}
 .verdict.no{background:rgba(178,112,13,.12);color:var(--gold)}
 .ret-note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+/* ===== Recorrido 3D ===== */
+.v3-wrap{position:relative;background:#070C12;overflow:hidden}
+#c3d{display:block;width:100%;height:clamp(280px,44vh,460px)}
+.v3-hud{position:absolute;left:16px;bottom:14px;color:rgba(238,245,242,.8);font-size:12px;letter-spacing:.03em;pointer-events:none}
+.v3-hud b{color:#FFE9A8}
+.v3-prog{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.12)}
+.v3-prog i{display:block;height:100%;width:0;background:var(--teal)}
+.v3-ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 16px;padding:14px 18px;align-items:end}
+.v3-ctl label{display:block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:5px}
+.v3-btns{display:flex;gap:8px;grid-column:span 2}
+@media (max-width:640px){.v3-btns{grid-column:auto}}
+.v3-btns button{flex:1;white-space:nowrap}
+@media print{.v3d{display:none}}
 
 /* ===== Presupuesto ===== */
 .presu{margin-top:20px}
@@ -571,6 +585,48 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
         <tbody id="verBody"></tbody>
       </table>
       <p class="ret-note" id="retNote"></p>
+    </div>
+  </div>
+</section>
+
+<!-- RECORRIDO 3D -->
+<section class="panel v3d">
+  <div class="panel-head">
+    <h2>Recorrido 3D de la instalación</h2>
+    <span class="hint" id="v3info">vista sobre el trazado cargado</span>
+  </div>
+  <div class="v3-wrap"><canvas id="c3d"></canvas>
+    <div class="v3-hud" id="v3hud">Presione <b>Previsualizar</b> para recorrer la vía</div>
+    <div class="v3-prog" id="v3prog"><i></i></div>
+  </div>
+  <div class="v3-ctl">
+    <div>
+      <label for="v3vista">Cámara</label>
+      <select id="v3vista">
+        <option value="recorrido" selected>Recorrido por la vía</option>
+        <option value="aerea">Vuelo aéreo</option>
+        <option value="poste">Junto al poste</option>
+      </select>
+    </div>
+    <div>
+      <label for="v3momento">Momento</label>
+      <select id="v3momento">
+        <option value="atardecer" selected>Atardecer con encendido</option>
+        <option value="noche">Noche cerrada</option>
+        <option value="dia">Día</option>
+      </select>
+    </div>
+    <div>
+      <label for="v3dur">Duración</label>
+      <select id="v3dur"><option value="10">10 s</option><option value="20" selected>20 s</option><option value="30">30 s</option></select>
+    </div>
+    <div>
+      <label for="v3res">Resolución</label>
+      <select id="v3res"><option value="720" selected>1280 × 720</option><option value="1080">1920 × 1080</option></select>
+    </div>
+    <div class="v3-btns">
+      <button type="button" class="ghost" id="v3play">▶ Previsualizar</button>
+      <button type="button" class="play" id="v3rec">⏺ Grabar y descargar</button>
     </div>
   </div>
 </section>
@@ -1360,6 +1416,8 @@ function render(){
 
   chartLux(sc);chartPow(sc);chartProf(m,req);chartMon(an);chartSweep(req);
   pintarPresupuesto();
+  if(!V3.anim&&!V3.grabando)pintar3D(0.08);
+  $('#v3info').textContent='sobre '+RUTA_NOMBRE.slice(0,40)+' · '+nPostes()+' postes';
 }
 
 /* ===================== Membrete, ficha y logos ===================== */
@@ -1558,6 +1616,270 @@ function buildPrintDoc(){
 }
 $('#printBtn').addEventListener('click',()=>{buildPrintDoc();setTimeout(()=>window.print(),60);});
 window.addEventListener('beforeprint',buildPrintDoc);
+
+/* ===================== Recorrido 3D y exportación de video ===================== */
+const V3={vista:'recorrido',momento:'atardecer',dur:20,res:720,t:0,anim:null,grabando:false};
+const c3=$('#c3d'), g3=c3.getContext('2d');
+/* Marco de render: x este, y norte, z arriba (a partir de x este, y sur del trazado) */
+const W3=p=>({x:p.x,y:-p.y,z:p.z||0});
+function camara3D(t){
+  const L=RUTA.len, s=clamp(t,0,1)*L;
+  const a=alongRoute(Math.min(s,L-1)), b=alongRoute(Math.min(s+30,L));
+  const nx=Math.sin(a.ang), ny=-Math.cos(a.ang);          // perpendicular a la vía
+  if(V3.vista==='aerea'){
+    const atras=alongRoute(Math.max(0,s-110)), lejos=alongRoute(Math.min(L,s+170));
+    return {p:{x:atras.x-nx*45,y:atras.y-ny*45,z:115},
+            o:{x:lejos.x,y:lejos.y,z:0}, fov:46};
+  }
+  if(V3.vista==='poste'){
+    const g=alongRoute(clamp(s,0,L));
+    return {p:{x:g.x+nx*11,y:g.y+ny*11,z:3.2},
+            o:{x:alongRoute(Math.min(s+40,L)).x,y:alongRoute(Math.min(s+40,L)).y,z:5}, fov:44};
+  }
+  return {p:{x:a.x+nx*(S.ancho/4),y:a.y+ny*(S.ancho/4),z:2.6},   // conduciendo por el carril
+          o:{x:b.x,y:b.y,z:1.6}, fov:40};
+}
+function proyector(cam,W,H){
+  const P=W3(cam.p), O=W3(cam.o);
+  let f={x:O.x-P.x,y:O.y-P.y,z:O.z-P.z};
+  const nf=Math.hypot(f.x,f.y,f.z)||1; f={x:f.x/nf,y:f.y/nf,z:f.z/nf};
+  let r={x:f.y*1-f.z*0,y:f.z*0-f.x*1,z:0};                 // f × (0,0,1)
+  r={x:f.y,y:-f.x,z:0};
+  const nr=Math.hypot(r.x,r.y)||1; r={x:r.x/nr,y:r.y/nr,z:0};
+  const u={x:r.y*f.z-r.z*f.y, y:r.z*f.x-r.x*f.z, z:r.x*f.y-r.y*f.x};
+  const foc=(W/2)/Math.tan(cam.fov*D);
+  return function(pt){
+    const q=W3(pt), dx=q.x-P.x, dy=q.y-P.y, dz=q.z-P.z;
+    const rz=dx*f.x+dy*f.y+dz*f.z;
+    if(rz<0.8)return null;
+    const rx=dx*r.x+dy*r.y+dz*r.z, ry=dx*u.x+dy*u.y+dz*u.z;
+    return {x:W/2+foc*rx/rz, y:H/2-foc*ry/rz, z:rz, esc:foc/rz};
+  };
+}
+function altSolar3D(t){
+  if(V3.momento==='noche')return -14;
+  if(V3.momento==='dia')return 55;
+  return 4-16*clamp(t*1.6,0,1);                            // atardece durante el primer 60 % del video
+}
+function render3D(ctx,W,H,t){
+  const alt=altSolar3D(t), luxN=luxNat(alt), encendidas=(luxN<S.umb)||V3.momento==='noche';
+  const cam=camara3D(t), P=proyector(cam,W,H);
+  // Cielo
+  const g=ctx.createLinearGradient(0,0,0,H);
+  if(alt>12){g.addColorStop(0,'#2E5F84');g.addColorStop(1,'#9FC2D4');}
+  else if(alt>-1){g.addColorStop(0,'#26314F');g.addColorStop(.55,'#7A4E63');g.addColorStop(1,'#D98A4E');}
+  else if(alt>-8){g.addColorStop(0,'#0C1220');g.addColorStop(.6,'#1A2438');g.addColorStop(1,'#38405A');}
+  else {g.addColorStop(0,'#05080F');g.addColorStop(.7,'#0A1018');g.addColorStop(1,'#141C26');}
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  // Estrellas
+  if(alt<-6){
+    ctx.fillStyle='rgba(255,255,255,.65)';
+    for(let i=0;i<70;i++){
+      const sx=(i*97.31%W), sy=(i*53.77%(H*0.42));
+      ctx.fillRect(sx,sy,1.4,1.4);
+    }
+  }
+  // Suelo: el terreno lejano se pinta hasta el horizonte
+  const hor=P({x:cam.o.x+(cam.o.x-cam.p.x)*400,y:cam.o.y+(cam.o.y-cam.p.y)*400,z:0});
+  const yh=hor?clamp(hor.y,0,H):H*0.45;
+  ctx.fillStyle=alt>0?'#5D6B4A':(alt>-8?'#1E2622':'#12181A');
+  ctx.fillRect(0,yh,W,H-yh);
+
+  const L=RUTA.len, s0=clamp(t,0,1)*L, an=S.ancho/2;
+  const seg=[];                                             // tramos de calzada visibles
+  const paso=6;
+  for(let s=Math.max(0,s0-40);s<Math.min(L,s0+320);s+=paso){
+    const a=alongRoute(s), b=alongRoute(Math.min(L,s+paso));
+    const nax=Math.sin(a.ang), nay=-Math.cos(a.ang), nbx=Math.sin(b.ang), nby=-Math.cos(b.ang);
+    seg.push({d:s,q:[{x:a.x-nax*an,y:a.y-nay*an},{x:a.x+nax*an,y:a.y+nay*an},
+                     {x:b.x+nbx*an,y:b.y+nby*an},{x:b.x-nbx*an,y:b.y-nby*an}],a:a,b:b});
+  }
+  seg.sort((A,B)=>B.d-A.d);
+  seg.forEach(sg=>{
+    const p=sg.q.map(P);if(p.some(q=>!q))return;
+    const lej=clamp(1-(sg.d-s0)/320,0.25,1);
+    ctx.fillStyle=alt>0?'rgba(74,78,82,'+lej+')':'rgba(30,35,40,'+lej+')';
+    ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);for(let i=1;i<4;i++)ctx.lineTo(p[i].x,p[i].y);ctx.closePath();ctx.fill();
+    // berma
+    ctx.strokeStyle=alt>0?'rgba(230,225,205,'+(0.5*lej)+')':'rgba(205,212,208,'+(0.2*lej)+')';
+    ctx.lineWidth=clamp(0.14*(p[0].esc||0),1,W*0.006);
+    ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);ctx.lineTo(p[3].x,p[3].y);ctx.moveTo(p[1].x,p[1].y);ctx.lineTo(p[2].x,p[2].y);ctx.stroke();
+  });
+  // Línea central discontinua
+  for(let s=Math.max(0,Math.floor(s0/12)*12);s<Math.min(L,s0+300);s+=12){
+    const a=alongRoute(s),b=alongRoute(Math.min(L,s+5));
+    const p1=P(a),p2=P(b);if(!p1||!p2)continue;
+    ctx.strokeStyle=alt>0?'rgba(245,240,215,.85)':'rgba(235,238,230,.5)';
+    ctx.lineWidth=Math.max(1,26/p1.z);
+    ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+  }
+  // Postes con su luminaria y su charco de luz
+  const dim=(V3.momento==='noche')?dimFactor(2):1;
+  const postes=[];
+  const np=nPostes();
+  for(let i=0;i<np;i++){
+    const s=i*S.sep; if(s<s0-45||s>s0+340)continue;
+    const a=alongRoute(s);
+    const nx=Math.sin(a.ang), ny=-Math.cos(a.ang);
+    const lado=(S.disp==='tres'&&i%2)?-1:1;
+    const dx=(an+0.6-S.avance);
+    postes.push({s:s,base:{x:a.x+nx*dx*lado,y:a.y+ny*dx*lado,z:0},
+                 lampara:{x:a.x+nx*(dx-1.4)*lado,y:a.y+ny*(dx-1.4)*lado,z:S.alt},
+                 luz:{x:a.x+nx*(dx-2.2)*lado,y:a.y+ny*(dx-2.2)*lado,z:0},d:Math.abs(s-s0)});
+    if(S.disp==='par'){
+      postes.push({s:s,base:{x:a.x-nx*dx,y:a.y-ny*dx,z:0},
+                   lampara:{x:a.x-nx*(dx-1.4),y:a.y-ny*(dx-1.4),z:S.alt},
+                   luz:{x:a.x-nx*(dx-2.2),y:a.y-ny*(dx-2.2),z:0},d:Math.abs(s-s0)});
+    }
+  }
+  postes.sort((A,B)=>B.d-A.d);
+  postes.forEach(po=>{
+    const pb=P(po.base), pl=P(po.lampara), pz=P(po.luz);
+    if(!pb||!pl)return;
+    if(encendidas&&pz){                                     // charco de luz sobre la calzada
+      const R=S.alt*1.5, pol=[];
+      for(let k=0;k<16;k++){
+        const th=k/16*6.2832;
+        const q=P({x:po.luz.x+Math.cos(th)*R,y:po.luz.y+Math.sin(th)*R*1.7,z:0});
+        if(q)pol.push(q);
+      }
+      if(pol.length>8){
+        const gr=ctx.createRadialGradient(pz.x,pz.y,1,pz.x,pz.y,clamp(R*pz.esc,8,W*0.55));
+        gr.addColorStop(0,'rgba(255,232,175,'+(0.42*dim)+')');
+        gr.addColorStop(.6,'rgba(255,220,150,'+(0.16*dim)+')');
+        gr.addColorStop(1,'rgba(255,214,120,0)');
+        ctx.fillStyle=gr;
+        ctx.beginPath();ctx.moveTo(pol[0].x,pol[0].y);pol.forEach(q=>ctx.lineTo(q.x,q.y));ctx.closePath();ctx.fill();
+      }
+      // Haz de luz (acotado: en primer plano taparía la escena)
+      if(pz&&pz.z>14){
+        const w=Math.min(W*0.10,Math.max(4,S.alt*1.2*pz.esc));
+        ctx.fillStyle='rgba(255,231,170,'+(0.07*dim)+')';
+        ctx.beginPath();ctx.moveTo(pl.x,pl.y);
+        ctx.lineTo(pz.x-w,pz.y);ctx.lineTo(pz.x+w,pz.y);ctx.closePath();ctx.fill();
+      }
+    }
+    // Poste y brazo
+    if(pb.z<10)return;                                    // el poste pegado a la cámara taparía la escena
+    ctx.strokeStyle=encendidas?'rgba(206,216,220,.9)':'rgba(150,162,166,.85)';
+    ctx.lineWidth=clamp(0.20*pb.esc,1.2,W*0.012);
+    ctx.beginPath();ctx.moveTo(pb.x,pb.y);ctx.lineTo(pl.x,pl.y);ctx.stroke();
+    const pt=P({x:po.lampara.x,y:po.lampara.y,z:S.alt+0.4});
+    if(pt){ctx.lineWidth=clamp(0.12*pb.esc,1,W*0.008);
+      ctx.beginPath();ctx.moveTo(pl.x,pl.y);ctx.lineTo(pt.x,pt.y);ctx.stroke();}
+    // Luminaria
+    const rl=clamp(0.55*pl.esc,2,W*0.02);
+    ctx.fillStyle=encendidas?'#FFF3C8':'#8A959A';
+    ctx.beginPath();ctx.ellipse(pl.x,pl.y,rl*1.7,rl*0.7,0,0,6.2832);ctx.fill();
+    if(encendidas){
+      const gl=ctx.createRadialGradient(pl.x,pl.y,1,pl.x,pl.y,rl*9);
+      gl.addColorStop(0,'rgba(255,240,190,'+(0.75*dim)+')');gl.addColorStop(1,'rgba(255,220,140,0)');
+      ctx.fillStyle=gl;ctx.beginPath();ctx.arc(pl.x,pl.y,rl*9,0,6.2832);ctx.fill();
+    }
+  });
+  // Rótulo del proyecto
+  const pad=Math.round(W*0.022), fs=Math.max(12,Math.round(W/64));
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.font='600 '+fs+'px Bahnschrift, DIN Alternate, system-ui, sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.94)';
+  ctx.fillText(PROY.emp,pad,pad);
+  ctx.font=Math.round(fs*0.72)+'px Segoe UI, system-ui, sans-serif';
+  ctx.fillStyle='rgba(232,240,236,.8)';
+  ctx.fillText(PROY.proy+' · '+PROY.cod,pad,pad+fs*1.25);
+  ctx.textAlign='right';
+  ctx.font='600 '+Math.round(fs*0.78)+'px Consolas, ui-monospace, monospace';
+  ctx.fillStyle='rgba(255,233,168,.95)';
+  ctx.fillText('K0+'+String(Math.round(s0)).padStart(3,'0')+' de '+Math.round(L)+' m',W-pad,pad);
+  ctx.fillStyle='rgba(232,240,236,.85)';
+  ctx.font=Math.round(fs*0.68)+'px Segoe UI, system-ui, sans-serif';
+  ctx.fillText(np+' postes cada '+S.sep+' m · '+S.pot+' W · h '+fmt(S.alt,1)+' m',W-pad,pad+fs*1.3);
+  ctx.fillText(encendidas?('Luminarias encendidas · luz natural '+(luxN>=10?Math.round(luxN):fmt(luxN,2))+' lux')
+                        :('Luminarias apagadas · luz natural '+Math.round(luxN)+' lux'),W-pad,pad+fs*2.25);
+  ctx.textAlign='left';
+}
+function ajustar3D(){
+  const r=c3.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
+  c3.width=r.width*dpr;c3.height=r.height*dpr;g3.setTransform(dpr,0,0,dpr,0,0);
+  return [r.width,r.height];
+}
+function pintar3D(t){const [w,h]=ajustar3D();render3D(g3,w,h,t);}
+function reproducir3D(){
+  if(V3.anim){cancelAnimationFrame(V3.anim);V3.anim=null;$('#v3play').textContent='▶ Previsualizar';return;}
+  const t0=performance.now(), dur=V3.dur*1000;
+  $('#v3play').textContent='❚❚ Detener';
+  const paso=ts=>{
+    const t=(ts-t0)/dur;
+    if(t>=1){pintar3D(1);$('#v3prog').firstElementChild.style.width='100%';
+      V3.anim=null;$('#v3play').textContent='▶ Previsualizar';return;}
+    pintar3D(t);$('#v3prog').firstElementChild.style.width=(t*100)+'%';
+    $('#v3hud').innerHTML='Abscisa <b>K0+'+String(Math.round(t*RUTA.len)).padStart(3,'0')+'</b> · '+
+      (altSolar3D(t)>0?'atardeciendo':'noche');
+    V3.anim=requestAnimationFrame(paso);
+  };
+  V3.anim=requestAnimationFrame(paso);
+}
+async function grabarVideo(){
+  if(V3.grabando)return;
+  if(typeof MediaRecorder==='undefined'||!HTMLCanvasElement.prototype.captureStream){
+    $('#v3hud').innerHTML='Este navegador no permite grabar video. Use Chrome o Edge actualizados.';return;
+  }
+  const H=V3.res===1080?1080:720, W=V3.res===1080?1920:1280;
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  const cx=cv.getContext('2d');
+  const stream=cv.captureStream(30);
+  let mime='video/webm;codecs=vp9';
+  if(!MediaRecorder.isTypeSupported(mime))mime='video/webm;codecs=vp8';
+  if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';
+  const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:V3.res===1080?9e6:5e6});
+  const trozos=[];rec.ondataavailable=e=>{if(e.data.size)trozos.push(e.data);};
+  const fin=new Promise(res=>rec.onstop=res);
+  V3.grabando=true;$('#v3rec').disabled=true;$('#v3rec').textContent='Grabando…';
+  rec.start(200);
+  const t0=performance.now(), dur=V3.dur*1000;
+  await new Promise(res=>{
+    const paso=ts=>{
+      const t=Math.min(1,(ts-t0)/dur);
+      render3D(cx,W,H,t);
+      $('#v3prog').firstElementChild.style.width=(t*100)+'%';
+      $('#v3hud').innerHTML='Grabando… <b>'+Math.round(t*100)+' %</b>';
+      if(t>=1)return res();
+      requestAnimationFrame(paso);
+    };
+    requestAnimationFrame(paso);
+  });
+  rec.stop();await fin;
+  const blob=new Blob(trozos,{type:'video/webm'});
+  const nombre=(PROY.cod||'alumbrado')+'_recorrido3D.webm';
+  let guardado=false;
+  // En la página publicada la descarga la media el visor; en el archivo local va directa
+  try{
+    if(window.claude&&typeof window.claude.use==='function'){
+      const dl=await window.claude.use('downloads');
+      if(dl){ await dl.save({filename:nombre,data:blob}); guardado=true; }
+    }
+  }catch(err){
+    $('#v3hud').innerHTML='No se guardó el video'+((err&&err.code==='declined')?': la descarga fue cancelada.':'.');
+    V3.grabando=false;$('#v3rec').disabled=false;$('#v3rec').textContent='⏺ Grabar y descargar';
+    return 0;
+  }
+  if(!guardado){
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=nombre;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),8000);
+  }
+  V3.grabando=false;$('#v3rec').disabled=false;$('#v3rec').textContent='⏺ Grabar y descargar';
+  $('#v3hud').innerHTML='Video listo: <b>'+(blob.size/1048576).toFixed(1)+' MB</b> en formato WebM.';
+  return blob.size;
+}
+$('#v3vista').addEventListener('change',e=>{V3.vista=e.target.value;pintar3D(V3.anim?0:0.08);});
+$('#v3momento').addEventListener('change',e=>{V3.momento=e.target.value;pintar3D(0.08);});
+$('#v3dur').addEventListener('change',e=>{V3.dur=+e.target.value;});
+$('#v3res').addEventListener('change',e=>{V3.res=+e.target.value;});
+$('#v3play').addEventListener('click',reproducir3D);
+$('#v3rec').addEventListener('click',grabarVideo);
+window.grabarVideo=grabarVideo;
 
 /* ===================== Presupuesto y cálculo eléctrico del circuito ===================== */
 /* Resistencia (Ω/km) de conductor de aluminio a 75 °C y reactancia típica de línea aérea */
