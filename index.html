@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="author" content="AB Creaciones Electricas S.A.S - Ing. Anibal Brito Vidal">
-<meta name="description" content="Diseno, verificacion RETILAP, presupuesto, recorrido 3D y asistente de alumbrado publico. Funciona sin conexion.">
+<meta name="description" content="Diseno, verificacion RETILAP, presupuesto, fotometria IES y recorrido 3D de alumbrado publico vial. Toda la informacion del proyecto se toma del KML o KMZ que se cargue.">
 <style>html{color-scheme:light dark}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Alumbrado Vía Las Flores</title>
+<title>Alumbrado Público Vías</title>
 <style>
 :root{
   --bg:#EDEEEA; --surface:#FFFFFF; --surface-2:#F5F6F2; --sunken:#E7E9E3;
@@ -67,6 +67,15 @@ button.theme:hover{border-color:var(--accent);color:var(--accent)}
 .panel-head .hint{font-size:12px;color:var(--muted)}
 
 .view{position:relative;background:#0B1218;overflow:hidden}
+.guia{border-top:1px solid var(--line-soft);padding:10px 16px 12px;font-size:12.5px;color:var(--ink-2)}
+.guia summary{cursor:pointer;font-weight:600;color:var(--ink-2);list-style:none}
+.guia summary::-webkit-details-marker{display:none}
+.guia summary::before{content:"▸ ";color:var(--muted)}
+.guia[open] summary::before{content:"▾ "}
+.guia ol{margin:10px 0 6px;padding-left:20px}
+.guia li{margin-bottom:5px;line-height:1.5}
+.guia p{margin:6px 0 0;font-size:11.5px;color:var(--muted)}
+@media print{.guia{display:none}}
 .rutabar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .filebtn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
   border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer}
@@ -139,6 +148,16 @@ button.ghost:hover{border-color:var(--accent);color:var(--accent)}
   border-radius:7px;padding:8px 6px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;letter-spacing:.04em}
 .classline button[aria-pressed="true"]{background:var(--accent);border-color:transparent;color:var(--accent-ink)}
 .classline button:hover{border-color:var(--accent)}
+.classline button[hidden]{display:none!important}
+table.niv{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0 2px}
+table.niv th{text-align:left;font-weight:600;color:var(--ink-2);padding:4px 8px 4px 0;white-space:nowrap}
+table.niv th small{color:var(--muted);font-weight:400}
+table.niv td{padding:4px 10px 4px 0;width:26%}
+table.niv input{width:100%;box-sizing:border-box;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);
+  border-radius:6px;padding:5px 7px;font:inherit;font-size:12.5px;font-variant-numeric:tabular-nums;text-align:right}
+table.niv input:focus{outline:2px solid var(--accent);outline-offset:1px}
+table.niv input.man{border-color:var(--gold);background:rgba(196,132,31,.12);font-weight:700}
+table.niv input:disabled{opacity:.45}
 table.ver{width:100%;border-collapse:collapse;font-size:13px}
 table.ver th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;
   padding:0 8px 6px 0;border-bottom:1px solid var(--line-soft)}
@@ -391,7 +410,7 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
     <div class="sub" id="lhSub">Ing. Aníbal Brito Vidal · Matrícula profesional AN205-89729 · Riohacha, La Guajira</div>
   </div>
   <div class="lh-right">
-    <b id="lhCod">AP-2026-LF-RCH</b>
+    <b id="lhCod">AP-2026-001</b>
     <span id="lhRev">Revisión A</span><br>
     <button class="print" id="printBtn" type="button" style="margin-top:7px">⎙ Imprimir / PDF</button>
   </div>
@@ -416,11 +435,11 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
 <header class="top">
   <div>
     <div class="eyebrow" id="topEyebrow">Alumbrado público · Dibulla, La Guajira</div>
-    <h1>Alumbrado Vía Las Flores</h1>
-    <p class="lead">Diseño y verificación RETILAP del alumbrado de los 1.889 m que unen el corregimiento de Las Flores con la Troncal del Caribe, en Dibulla. La geometría solar fija la hora de encendido por fotocelda; la malla de cálculo entrega luminancia, uniformidades, deslumbramiento y densidad de potencia contra la clase de vía escogida.</p>
+    <h1>Alumbrado Público Vías</h1>
+    <p class="lead" id="leadTxt">Diseño y verificación RETILAP del alumbrado de una vía. Cargue el KMZ del corredor y la aplicación toma de allí la geometría, la longitud y la ubicación: con ella calcula la hora de encendido por fotocelda y la malla de luminancia, uniformidades, deslumbramiento y densidad de potencia contra la clase de vía escogida.</p>
   </div>
   <div class="badges">
-    <span class="badge"><span class="dot"></span>Dibulla · 11,26° N</span>
+    <span class="badge"><span class="dot"></span><span id="badgeSitio">—</span></span>
     <span class="badge"><span class="dot sun"></span>Funciona sin conexión</span>
     <button class="theme" id="themeBtn" type="button">Tema</button>
   </div>
@@ -429,25 +448,38 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
 <div class="stage">
   <section class="panel">
     <div class="panel-head">
-      <h2 id="rutaNom">Trazado · Vía Las Flores</h2>
+      <h2 id="rutaNom">Trazado · sin proyecto cargado</h2>
       <div class="rutabar">
-        <span class="hint" id="rutaInfo">1.889 m · Google Earth</span>
-        <label class="filebtn">Cargar KML / KMZ<input type="file" id="kmlFile" accept=".kml,.kmz,application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz"></label>
-        <button type="button" class="minibtn" id="kmlReset" title="Volver al trazado original">↺</button>
+        <span class="hint" id="rutaInfo">ejemplo de 1.239 m</span>
+        <label class="filebtn">Cargar KML / KMZ (con imagen)<input type="file" id="kmlFile" accept=".kml,.kmz,application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz"></label>
+        <button type="button" class="minibtn" id="kmlExport" title="Exportar el diseño a Google Earth">↓ KML del diseño</button>
+        <button type="button" class="minibtn" id="kmlReset" title="Volver al trazado de ejemplo">↺</button>
       </div>
     </div>
     <div class="view">
       <canvas id="map"></canvas>
       <div class="ov">
-        <span class="chip" id="chipRoute">Vía Las Flores · 1.889 m</span>
+        <span class="chip" id="chipRoute">Trazado de ejemplo</span>
         <span class="chip" id="chipPoles">— postes</span>
       </div>
       <div class="ov right">
         <span class="chip state off" id="chipState">Fotocelda · apagado</span>
         <span class="chip" id="chipLux">Luz natural — lux</span>
       </div>
-      <div class="hintline" id="pieMapa">Planta esquemática sobre el trazado medido en Google Earth</div>
+      <div class="hintline" id="pieMapa">Trazado de ejemplo — cargue el KML o KMZ de su vía</div>
     </div>
+    <details class="guia">
+      <summary>Cómo preparar el KMZ con la imagen del terreno georreferenciada</summary>
+      <ol>
+        <li>En <b>Google Earth Pro</b>, ubique el corredor del proyecto en pantalla.</li>
+        <li>Menú <b>Agregar → Superposición de imagen</b>. En <i>Vínculo</i> elija la imagen (o use <i>Captura de pantalla</i> de la propia vista).</li>
+        <li>Con los tiradores verdes ajuste la imagen sobre el terreno hasta que la vía real coincida con la de la foto. Baje la transparencia mientras lo hace.</li>
+        <li>Acepte. En el panel <i>Lugares</i> seleccione la superposición <b>y también la ruta</b> de la vía (o póngalas en una misma carpeta).</li>
+        <li>Clic derecho sobre la carpeta → <b>Guardar lugar como…</b> → tipo <b>.kmz</b>.</li>
+        <li>Cargue ese .kmz con el botón <b>Cargar KML / KMZ</b>: la aplicación extrae la imagen, lee su recuadro de coordenadas y la coloca amarrada a latitud y longitud reales. Sin deslizadores.</li>
+      </ol>
+      <p>Si el archivo trae solo la superposición, se aplica la imagen y se conserva el trazado que ya esté cargado.</p>
+    </details>
     <div class="view">
       <canvas id="street"></canvas>
       <div class="hintline">Vista de perfil · tramo entre postes</div>
@@ -478,6 +510,8 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
         <div class="pair">
           <input type="date" id="date" value="2026-09-04">
           <select id="lamp" aria-label="Tipo de luminaria">
+            <option value="160,0.93">LED vial alta eficacia 160 lm/W</option>
+            <option value="150,0.93">LED vial alta eficacia 150 lm/W</option>
             <option value="140,0.92">LED vial 140 lm/W</option>
             <option value="120,0.92" selected>LED vial 120 lm/W</option>
             <option value="100,0.90">LED básico 100 lm/W</option>
@@ -501,6 +535,7 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
             <option value="uni" selected>Unilateral</option>
             <option value="tres">Bilateral tresbolillo</option>
             <option value="par">Bilateral pareada</option>
+            <option value="central">Andén central · doble brazo</option>
           </select>
           <input type="range" id="ancho" min="5" max="14" step="0.5" value="7" aria-label="Ancho de calzada">
         </div>
@@ -508,6 +543,19 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
         <input type="range" id="avance" min="-1.5" max="2.5" step="0.1" value="0.5">
         <div class="ctl-row" style="margin:9px 0 6px"><label for="incl">Inclinación de la luminaria</label><span class="val num" id="inclV">5°</span></div>
         <input type="range" id="incl" min="0" max="20" step="1" value="5">
+        <div id="ctlSeparador" hidden>
+          <div class="ctl-row" style="margin:11px 0 6px"><label for="sepAncho">Ancho del andén central</label><span class="val num" id="sepAnchoV">2,0 m</span></div>
+          <input type="range" id="sepAncho" min="0.8" max="12" step="0.1" value="2">
+          <div class="ctl-row" style="margin:9px 0 6px"><label for="sepAlto">Altura del andén sobre la calzada</label><span class="val num" id="sepAltoV">0,20 m</span></div>
+          <input type="range" id="sepAlto" min="0" max="1.2" step="0.05" value="0.2">
+          <p class="tip">Con andén central, el ancho de calzada de arriba es el de <b>cada</b> calzada; la verificación RETILAP se hace sobre una de ellas, que es como se recibe en obra.</p>
+        </div>
+        <div class="ctl-row" style="margin:11px 0 6px"><label>Fotometría</label><span class="val num" id="iesEstado">modelo genérico</span></div>
+        <div class="pair">
+          <label class="filebtn">Cargar archivo .IES<input type="file" id="iesFile" accept=".ies,.IES,text/plain"></label>
+          <button type="button" class="minibtn" id="iesReset" title="Volver al modelo genérico" style="width:100%">↺ genérico</button>
+        </div>
+        <p class="tip" id="iesInfo">Con el archivo fotométrico del fabricante, la malla se calcula con la curva real de la luminaria en lugar del modelo aproximado.</p>
       </div>
       <div class="ctl">
         <div class="ctl-row"><label for="umb">Umbral de la fotocelda</label><span class="val num" id="umbV">30 lux</span></div>
@@ -538,10 +586,16 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
 <section class="panel retilap">
   <div class="panel-head">
     <h2>Verificación RETILAP · vías de tráfico motorizado</h2>
-    <span class="hint">Sección 510 · Resolución 180540 de 2010</span>
+    <span class="hint" id="retHint">RETILAP 2024 · Resolución 40150 de 2024</span>
   </div>
   <div class="ret-grid">
     <div class="ret-left">
+      <div class="eyebrow">Norma aplicable</div>
+      <select id="norma" style="margin-bottom:14px">
+        <option value="2024" selected>RETILAP 2024 · Res. 40150 de 2024 — vigente</option>
+        <option value="2010">RETILAP 2010 · Res. 180540 · tablas 510.2.1</option>
+      </select>
+
       <div class="eyebrow">Clase de iluminación</div>
       <div class="classline" id="classLine">
         <button type="button" data-c="M1" aria-pressed="false">M1</button>
@@ -549,22 +603,24 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
         <button type="button" data-c="M3" aria-pressed="false">M3</button>
         <button type="button" data-c="M4" aria-pressed="true">M4</button>
         <button type="button" data-c="M5" aria-pressed="false">M5</button>
+        <button type="button" data-c="M6" aria-pressed="false">M6</button>
       </div>
       <p class="tip" id="claseDesc" style="margin-top:2px"></p>
 
       <div class="ctl" style="border-bottom:0;padding-top:14px">
-        <div class="ctl-row"><label for="tipoVia">Tipo de vía (tabla 510.1.1)</label></div>
+        <div class="ctl-row"><label for="tipoVia">Tipo de vía</label></div>
         <select id="tipoVia">
           <option value="M1">Autopistas y carreteras · V &gt; 80 km/h · T &gt; 1.000 veh/h</option>
           <option value="M2">Vías de acceso controlado y rápidas · 60–80 km/h · 500–1.000 veh/h</option>
           <option value="M3">Vías principales y ejes viales · 30–60 km/h · 250–500 veh/h</option>
           <option value="M4" selected>Vías primarias o colectoras · V &lt; 30 km/h · 100–250 veh/h</option>
           <option value="M5">Vías secundarias · al paso · T &lt; 100 veh/h</option>
+          <option value="M6">Vías locales y residenciales · peatón predominante</option>
         </select>
         <div class="ctl-row" style="margin:11px 0 6px"><label for="crit">Criterio de verificación</label><span class="val num" id="critV"></span></div>
         <select id="crit">
-          <option value="E" selected>Iluminancia (tabla 510.2.1.b)</option>
-          <option value="L">Luminancia (tabla 510.2.1.a)</option>
+          <option value="E" selected>Iluminancia</option>
+          <option value="L">Luminancia</option>
         </select>
         <div class="ctl-row" style="margin:11px 0 6px"><label for="pav">Clase de pavimento</label><span class="val num" id="pavV">R3 · q₀ 0,07</span></div>
         <select id="pav">
@@ -573,6 +629,19 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
           <option value="R3,0.07" selected>R3 · asfalto corriente</option>
           <option value="R4,0.08">R4 · asfalto muy especular</option>
         </select>
+
+        <div class="eyebrow" style="margin-top:18px">Niveles exigidos · <span id="nivClase">M4</span></div>
+        <table class="niv"><tbody>
+          <tr><th><label for="exL">L media <small>cd/m²</small></label></th><td><input type="number" id="exL" step="0.05" min="0" max="10"></td>
+              <th><label for="exUo">U₀</label></th><td><input type="number" id="exUo" step="0.01" min="0" max="1"></td></tr>
+          <tr><th><label for="exUl">Uₗ</label></th><td><input type="number" id="exUl" step="0.05" min="0" max="1"></td>
+              <th><label for="exTI">TI <small>%</small></label></th><td><input type="number" id="exTI" step="1" min="0" max="50"></td></tr>
+          <tr><th><label for="exSR">SR</label></th><td><input type="number" id="exSR" step="0.05" min="0" max="1"></td>
+              <th><label for="exE">E media <small>lux</small></label></th><td><input type="number" id="exE" step="1" min="0" max="200"></td></tr>
+        </tbody></table>
+        <p class="tip" id="nivTip"></p>
+        <button class="ghost" id="nivReset" type="button" style="margin-top:6px">Restaurar los valores de la norma</button>
+
         <button class="ghost" id="fixBtn" type="button" style="margin-top:12px">Ajustar potencia e interdistancia para cumplir</button>
         <p class="tip" id="fixTip">Busca la combinación de menor densidad de potencia que cumpla todos los requisitos de la clase, manteniendo altura, disposición y tipo de luminaria.</p>
       </div>
@@ -600,12 +669,35 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
     <div class="v3-prog" id="v3prog"><i></i></div>
   </div>
   <div class="v3-ctl">
+    <div style="grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:10px;align-items:end">
+      <div>
+        <label>Fondo del terreno · alternativa manual</label>
+        <label class="filebtn">Cargar imagen suelta<input type="file" id="fondoFile" accept="image/*"></label>
+      </div>
+      <button type="button" class="play" id="fondoAuto" style="padding:7px 13px">⌖ Encuadrar automáticamente</button>
+      <button type="button" class="ghost" id="fondoOtro" style="width:auto;padding:6px 12px" hidden>↻ Probar otro encuadre</button>
+      <button type="button" class="ghost" id="fondoAlinear" style="width:auto;padding:6px 12px">Alinear con 2 puntos</button>
+      <button type="button" class="minibtn" id="fondoOff" title="Quitar la imagen">✕</button>
+      <span class="hint" id="fondoEstado" style="align-self:center">sin imagen</span>
+      <label class="switch" style="align-self:center" title="Desmárquela solo si la captura de Google Earth está girada"><input type="checkbox" id="norteArriba" checked>Norte arriba</label>
+      <div style="flex:1;min-width:240px" id="fondoCtl" hidden>
+        <label>Ajuste sobre el trazado — escala, giro y desplazamiento</label>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+          <input type="range" id="foEsc" min="0.3" max="3" step="0.01" value="1" aria-label="Escala" title="Escala">
+          <input type="range" id="foRot" min="-180" max="180" step="0.5" value="0" aria-label="Giro" title="Giro">
+          <input type="range" id="foDx" min="-600" max="600" step="5" value="0" aria-label="Desplazar este-oeste" title="Desplazar E-O">
+          <input type="range" id="foDy" min="-600" max="600" step="5" value="0" aria-label="Desplazar norte-sur" title="Desplazar N-S">
+          <input type="range" id="foOp" min="0.2" max="1" step="0.05" value="1" aria-label="Opacidad del plano" title="Opacidad">
+        </div>
+      </div>
+    </div>
     <div>
       <label for="v3vista">Cámara</label>
       <select id="v3vista">
         <option value="recorrido" selected>Recorrido por la vía</option>
         <option value="aerea">Vuelo aéreo</option>
         <option value="poste">Junto al poste</option>
+        <option value="cenital">Cenital sobre el plano</option>
       </select>
     </div>
     <div>
@@ -639,6 +731,13 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
   </div>
   <div class="presu-top">
     <div>
+      <label>Naturaleza del proyecto</label>
+      <div class="seg" id="segNat" role="group" aria-label="Naturaleza del proyecto">
+        <button type="button" data-v="privado" aria-pressed="true">Privado</button>
+        <button type="button" data-v="publico" aria-pressed="false">Público</button>
+      </div>
+    </div>
+    <div>
       <label>Transformador</label>
       <div class="seg" id="segTrafo" role="group" aria-label="Transformador">
         <button type="button" data-v="auto" aria-pressed="true">Automático</button>
@@ -669,11 +768,30 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
     <div>
       <label for="selPoste">Poste</label>
       <select id="selPoste">
-        <option value="8-510">Concreto 8 m · 510 kgf</option>
-        <option value="9-510" selected>Concreto 9 m · 510 kgf</option>
-        <option value="10-510">Concreto 10 m · 510 kgf</option>
-        <option value="12-750">Concreto 12 m · 750 kgf</option>
-        <option value="metal">Metálico cónico 8 m</option>
+        <optgroup label="Concreto pretensado">
+          <option value="c8-510">8 m · 510 kgf</option>
+          <option value="c8-750">8 m · 750 kgf</option>
+          <option value="c9-510" selected>9 m · 510 kgf</option>
+          <option value="c10-510">10 m · 510 kgf</option>
+          <option value="c10-750">10 m · 750 kgf</option>
+          <option value="c10-1050">10 m · 1.050 kgf</option>
+          <option value="c12-750">12 m · 750 kgf</option>
+          <option value="c12-1050">12 m · 1.050 kgf</option>
+          <option value="c14-1050">14 m · 1.050 kgf</option>
+        </optgroup>
+        <optgroup label="Metálico galvanizado">
+          <option value="m6">Troncocónico 6 m</option>
+          <option value="m8">Cónico 8 m</option>
+          <option value="m10">Cónico 10 m</option>
+          <option value="m12">Cónico 12 m</option>
+          <option value="mo12">Ornamental con brazo 12 m</option>
+        </optgroup>
+        <optgroup label="Otros materiales">
+          <option value="f8">Fibra de vidrio 8 m</option>
+          <option value="f10">Fibra de vidrio 10 m</option>
+          <option value="w8">Madera inmunizada 8 m</option>
+          <option value="w10">Madera inmunizada 10 m</option>
+        </optgroup>
       </select>
     </div>
   </div>
@@ -691,6 +809,7 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
     <div><div class="k">Retorno de energía</div><div class="v" id="kpiEner">—</div></div>
   </div>
   <p class="ret-note" style="padding:12px 18px 16px">
+    <b id="notaPublico"></b>
     Precios de referencia del mercado colombiano recogidos en septiembre de 2026 y ajustables en la tabla: son un
     <b>estimado de orden de magnitud</b> para anteproyecto, no reemplazan las cotizaciones ni el análisis de precios
     unitarios de la propuesta. Alcances considerados: RETIE (puesta a tierra, protecciones, dictamen de inspección),
@@ -744,7 +863,7 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
 
 <section class="panel method">
   <h2>Cómo se calcula</h2>
-  <p style="max-width:74ch">El trazado son los vértices de la ruta medida en Google Earth entre Las Flores y la Troncal del Caribe, escalados a los 1.889,21 m que reporta la regla. Los criterios de aceptación son los de la sección 510 del RETILAP; el cálculo fotométrico es un modelo simplificado y no reemplaza la memoria de diseño con archivos fotométricos IES/LDT del fabricante.</p>
+  <p style="max-width:74ch">El trazado son los 54 vértices del archivo KMZ levantado en Google Earth entre Las Flores y la Troncal del Caribe. Los criterios de aceptación son los de la sección 510 del RETILAP; el cálculo fotométrico es un modelo simplificado y no reemplaza la memoria de diseño con archivos fotométricos IES/LDT del fabricante.</p>
   <div class="method-grid">
     <div>
       <h3>Hora de encendido</h3>
@@ -772,7 +891,7 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
 
 <footer>
   <span>AB Creaciones Eléctricas S.A.S · Ing. Aníbal Brito Vidal · Matrícula profesional AN205-89729</span>
-  <span>Trazado: ruta Las Flores – Troncal del Caribe, 1.889,21 m (Google Earth, imagen 1/24/2024)</span>
+  <span id="pieTrazado">—</span>
 </footer>
 </div>
 
@@ -789,6 +908,7 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
     <div class="who">
       <b>Asistente del proyecto</b>
       <span class="estado loc" id="chEstado"><i></i>modo local</span>
+      <span id="chProy" style="display:block;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">sin proyecto cargado</span>
     </div>
     <button type="button" id="chCfgBtn" title="Configurar la conexión" aria-label="Configuración">⚙</button>
     <button type="button" id="chClose" title="Cerrar" aria-label="Cerrar">✕</button>
@@ -825,6 +945,7 @@ table.p-tab td.n{text-align:right;font-family:Consolas,ui-monospace,monospace;fo
     <div class="row">
       <button type="button" class="pri" id="chSave">Guardar y probar</button>
       <button type="button" id="chClear">Borrar clave</button>
+      <button type="button" id="chReset">Reiniciar chat</button>
     </div>
     <p>La clave se guarda solo en este navegador. Sin clave, o si el navegador bloquea la llamada, el asistente responde igual con los datos del proyecto y de la simulación (modo local).</p>
   </div>
@@ -839,17 +960,53 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const fmt=(v,d)=>(isFinite(v)?v:0).toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=v=>'$ '+Math.round(v).toLocaleString('es-CO');
 
-/* ===================== RETILAP · sección 510 ===================== */
-/* Tabla 510.2.1.a — criterio de luminancia */
-const CLASES={
-  M1:{L:2.0,Uo:.40,Ul:.50,TI:10,SR:.5,via:'Autopistas y carreteras · V > 80 km/h · más de 1.000 veh/h'},
-  M2:{L:1.5,Uo:.40,Ul:.50,TI:10,SR:.5,via:'Vías de acceso controlado y rápidas · 60 a 80 km/h · 500 a 1.000 veh/h'},
-  M3:{L:1.2,Uo:.40,Ul:.50,TI:10,SR:.5,via:'Vías principales y ejes viales · 30 a 60 km/h · 250 a 500 veh/h'},
-  M4:{L:0.8,Uo:.40,Ul:null,TI:15,SR:null,via:'Vías primarias o colectoras · V < 30 km/h · 100 a 250 veh/h'},
-  M5:{L:0.6,Uo:.40,Ul:null,TI:15,SR:null,via:'Vías secundarias · tránsito al paso · menos de 100 veh/h'}
+/* ===================== RETILAP · niveles exigidos ===================== */
+/* Se incluyen las dos tablas normativas y el usuario elige cuál aplica.
+   · RETILAP 2024 (Res. 40150 de 2024, corregida por la Res. 40286 de 2026):
+     rige las instalaciones iniciadas desde el 1 de enero de 2026. Las clases M
+     son clases de LUMINANCIA (serie M1 2,0 · M2 1,5 · M3 1,0 · M4 0,75 ·
+     M5 0,5 · M6 0,3 cd/m²) y la verificación se hace por luminancia.
+   · RETILAP 2010 (Res. 180540, tablas 510.2.1.a y 510.2.1.b): se conserva para
+     las instalaciones que iniciaron construcción antes del 1 de enero de 2026.
+   Todos los valores son editables en el panel «Niveles exigidos»: si su copia
+   del reglamento trae una cifra distinta, se escribe y el diseño se verifica
+   contra ella. */
+const NORMAS={
+ '2024':{
+  nom:'RETILAP 2024',
+  ref:'Resolución 40150 de 2024 · corregida por la Res. 40286 de 2026',
+  vig:'Aplica a instalaciones iniciadas desde el 1 de enero de 2026.',
+  clases:{
+   M1:{L:2.00,Uo:.40,Ul:.70,TI:10,SR:.35,via:'Autopistas y carreteras · V > 80 km/h · más de 1.000 veh/h'},
+   M2:{L:1.50,Uo:.40,Ul:.70,TI:10,SR:.35,via:'Vías de acceso controlado y rápidas · 60 a 80 km/h · 500 a 1.000 veh/h'},
+   M3:{L:1.00,Uo:.40,Ul:.60,TI:15,SR:.35,via:'Vías principales y ejes viales · 30 a 60 km/h · 250 a 500 veh/h'},
+   M4:{L:0.75,Uo:.40,Ul:.60,TI:15,SR:.30,via:'Vías primarias o colectoras · V < 30 km/h · 100 a 250 veh/h'},
+   M5:{L:0.50,Uo:.35,Ul:.40,TI:15,SR:.30,via:'Vías secundarias · tránsito al paso · menos de 100 veh/h'},
+   M6:{L:0.30,Uo:.35,Ul:.40,TI:20,SR:.30,via:'Vías locales y residenciales · tránsito muy bajo · peatón predominante'}
+  },
+  /* la iluminancia exigida se deriva de E = L / q₀ salvo que se escriba a mano */
+  ilum:{}
+ },
+ '2010':{
+  nom:'RETILAP 2010',
+  ref:'Resolución 180540 de 2010 · sección 510 · tablas 510.2.1.a y 510.2.1.b',
+  vig:'Aplica a instalaciones que iniciaron construcción antes del 1 de enero de 2026.',
+  clases:{
+   M1:{L:2.0,Uo:.40,Ul:.50,TI:10,SR:.5,via:'Autopistas y carreteras · V > 80 km/h · más de 1.000 veh/h'},
+   M2:{L:1.5,Uo:.40,Ul:.50,TI:10,SR:.5,via:'Vías de acceso controlado y rápidas · 60 a 80 km/h · 500 a 1.000 veh/h'},
+   M3:{L:1.2,Uo:.40,Ul:.50,TI:10,SR:.5,via:'Vías principales y ejes viales · 30 a 60 km/h · 250 a 500 veh/h'},
+   M4:{L:0.8,Uo:.40,Ul:null,TI:15,SR:null,via:'Vías primarias o colectoras · V < 30 km/h · 100 a 250 veh/h'},
+   M5:{L:0.6,Uo:.40,Ul:null,TI:15,SR:null,via:'Vías secundarias · tránsito al paso · menos de 100 veh/h'}
+  },
+  ilum:{ M3:{R1:12,R2:17,R3:17,R4:15,Uo:.34}, M4:{R1:8,R2:12,R3:12,R4:10,Uo:.25}, M5:{R1:6,R2:9,R3:9,R4:8,Uo:.18} }
+ }
 };
-/* Tabla 510.2.1.b — criterio de iluminancia (lux) por clase de pavimento y su uniformidad */
-const ILUM={ M3:{R1:12,R2:17,R3:17,R4:15,Uo:.34}, M4:{R1:8,R2:12,R3:12,R4:10,Uo:.25}, M5:{R1:6,R2:9,R3:9,R4:8,Uo:.18} };
+let CLASES=NORMAS['2024'].clases, ILUM=NORMAS['2024'].ilum;
+/* Ajustes manuales del proyectista, por norma y clase: {'2024|M3':{L:1.05,…}} */
+const OVR={};
+const ovrKey=()=>S.norma+'|'+S.clase;
+function ovrActual(){return OVR[ovrKey()]||{};}
+function hayOvr(){const o=ovrActual();return Object.keys(o).some(k=>o[k]!==undefined&&o[k]!==null);}
 /* Tabla 510.6.1 — DPEA máxima (W/m²) por iluminancia promedio y ancho de calzada */
 const DPEA_LX=[3,6,12,20,26];
 const DPEA_W=[[0.29,0.26,0.23,0.19,0.17],[0.44,0.41,0.38,0.35,0.31],[0.91,0.86,0.81,0.74,0.69],
@@ -867,20 +1024,76 @@ function dpeaMax(E,w){
 }
 
 /* ===================== Sitio y trazado ===================== */
-const SITE={lat:11.2632,lon:-73.1772,tz:-5};
-let RUTA_M=1889.21;
-const VERT_PX=[[255,145],[330,180],[430,190],[470,215],[520,250],[620,355],[700,410],[770,437],
-               [1000,590],[1230,700],[1290,775],[1330,845],[1360,890]];
-let HITOS=[{i:0,l:'Las Flores'},{i:2,l:'I.E.R. Adolfo Antonio'},{i:3,l:'Cementerio'},{i:12,l:'Troncal del Caribe'}];
-let RUTA_NOMBRE='Vía Las Flores, del corregimiento de Las Flores a la Troncal del Caribe (Dibulla, La Guajira)';
-let RUTA_FUENTE='trazado medido en Google Earth (imagen 1/24/2024)';
-let RUTA_PROPIA=true;   // el empalme con la Troncal solo aplica al trazado original
+/* Capitales de departamento, para ubicar el proyecto sin necesidad de internet */
+const CAPITALES=[[-4.2153,-69.9406,'Leticia','Amazonas'],[6.2442,-75.5812,'Medellín','Antioquia'],
+[7.0903,-70.7617,'Arauca','Arauca'],[10.9685,-74.7813,'Barranquilla','Atlántico'],
+[10.3910,-75.4794,'Cartagena','Bolívar'],[5.5353,-73.3678,'Tunja','Boyacá'],
+[5.0703,-75.5138,'Manizales','Caldas'],[1.6144,-75.6062,'Florencia','Caquetá'],
+[5.3378,-72.3959,'Yopal','Casanare'],[2.4448,-76.6147,'Popayán','Cauca'],
+[10.4631,-73.2532,'Valledupar','Cesar'],[5.6947,-76.6611,'Quibdó','Chocó'],
+[8.7479,-75.8814,'Montería','Córdoba'],[4.7110,-74.0721,'Bogotá','Cundinamarca'],
+[3.8653,-67.9239,'Inírida','Guainía'],[2.5729,-72.6459,'San José del Guaviare','Guaviare'],
+[2.9273,-75.2819,'Neiva','Huila'],[11.5444,-72.9072,'Riohacha','La Guajira'],
+[11.2408,-74.1990,'Santa Marta','Magdalena'],[4.1420,-73.6266,'Villavicencio','Meta'],
+[1.2136,-77.2811,'Pasto','Nariño'],[7.8939,-72.5078,'Cúcuta','Norte de Santander'],
+[1.1519,-76.6470,'Mocoa','Putumayo'],[4.5339,-75.6811,'Armenia','Quindío'],
+[4.8087,-75.6906,'Pereira','Risaralda'],[12.5847,-81.7006,'San Andrés','San Andrés'],
+[7.1193,-73.1227,'Bucaramanga','Santander'],[9.3047,-75.3978,'Sincelejo','Sucre'],
+[4.4389,-75.2322,'Ibagué','Tolima'],[3.4516,-76.5320,'Cali','Valle del Cauca'],
+[1.1983,-70.1733,'Mitú','Vaupés'],[6.1890,-67.4859,'Puerto Carreño','Vichada']];
+const REGION={'Amazonas':'región Amazonía','Antioquia':'región Andina','Arauca':'región Orinoquía',
+'Atlántico':'región Caribe','Bolívar':'región Caribe','Boyacá':'región Andina','Caldas':'región Andina',
+'Caquetá':'región Amazonía','Casanare':'región Orinoquía','Cauca':'región Pacífica','Cesar':'región Caribe',
+'Chocó':'región Pacífica','Córdoba':'región Caribe','Cundinamarca':'región Andina','Guainía':'región Amazonía',
+'Guaviare':'región Amazonía','Huila':'región Andina','La Guajira':'región Caribe','Magdalena':'región Caribe',
+'Meta':'región Orinoquía','Nariño':'región Pacífica','Norte de Santander':'región Andina','Putumayo':'región Amazonía',
+'Quindío':'región Andina','Risaralda':'región Andina','San Andrés':'región Insular','Santander':'región Andina',
+'Sucre':'región Caribe','Tolima':'región Andina','Valle del Cauca':'región Pacífica','Vaupés':'región Amazonía',
+'Vichada':'región Orinoquía'};
+function refGeografica(lat,lon){
+  let mejor=null,dmin=1e12;
+  CAPITALES.forEach(c=>{
+    const dx=(lon-c[1])*111320*Math.cos(lat*Math.PI/180), dy=(lat-c[0])*110540;
+    const d=Math.hypot(dx,dy);
+    if(d<dmin){dmin=d;mejor={c:c,dx:dx,dy:dy,d:d};}
+  });
+  if(!mejor)return {texto:'',depto:''};
+  const rumbo=['N','NE','E','SE','S','SO','O','NO'];
+  const ang=(Math.atan2(mejor.dx,mejor.dy)*180/Math.PI+360)%360;
+  const dir=rumbo[Math.round(ang/45)%8];
+  const km=mejor.d/1000;
+  return {depto:mejor.c[3],capital:mejor.c[2],
+    texto:(km<6?'en ':(km.toFixed(0)+' km al '+dir+' de '))+mejor.c[2]+' ('+mejor.c[3]+')'};
+}
+const SITE={lat:4.6054,lon:-74.0785,tz:-5};
+let RUTA_M=1200;
+let CARGADO=false;                                  // pasa a true cuando se carga un KML/KMZ
+/* Trazado de ejemplo: un tramo recto de 1,2 km. Se reemplaza al cargar el archivo del proyecto */
+const RUTA_EJEMPLO=(function(){
+  const g=[];
+  for(let i=0;i<=12;i++)g.push([4.60000+i*0.0009,-74.08000+i*0.00025]);
+  return g;
+})();
+let HITOS=[{i:0,l:'Inicio'},{i:12,l:'Fin'}];
+let RUTA_NOMBRE='trazado de ejemplo';
+let RUTA_FUENTE='ejemplo — cargue el KML o KMZ de su vía';
+let RUTA_PROPIA=false;
+let RUTA_ALT=null;                                  // desnivel, si el archivo trae cotas
+/* Coordenadas geográficas → metros locales (x este, y sur) */
+function geoAMetros(geo){
+  const lat0=geo.reduce((a,p)=>a+p[0],0)/geo.length, lon0=geo.reduce((a,p)=>a+p[1],0)/geo.length;
+  const mx=111320*Math.cos(lat0*Math.PI/180), my=110540;
+  const pts=geo.map(p=>({x:(p[1]-lon0)*mx, y:-(p[0]-lat0)*my}));
+  const acc=[0];
+  for(let i=1;i<pts.length;i++)acc.push(acc[i-1]+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y));
+  return {pts:pts,acc:acc,len:acc[acc.length-1],lat0:lat0,lon0:lon0};
+}
+let RUTA_ORIGEN={lat0:4.6054,lon0:-74.0785};
 let RUTA=(function(){
-  const p=VERT_PX.map(v=>({x:v[0]-VERT_PX[0][0],y:v[1]-VERT_PX[0][1]}));
-  let L=0;for(let i=1;i<p.length;i++)L+=Math.hypot(p[i].x-p[i-1].x,p[i].y-p[i-1].y);
-  const k=RUTA_M/L, m=p.map(q=>({x:q.x*k,y:q.y*k}));
-  const acc=[0];for(let i=1;i<m.length;i++)acc.push(acc[i-1]+Math.hypot(m[i].x-m[i-1].x,m[i].y-m[i-1].y));
-  return {pts:m,acc:acc,len:acc[acc.length-1]};
+  const r=geoAMetros(RUTA_EJEMPLO);
+  RUTA_M=+r.len.toFixed(2);
+  RUTA_ORIGEN={lat0:r.lat0,lon0:r.lon0};
+  return {pts:r.pts,acc:r.acc,len:r.len};
 })();
 function alongRoute(s){
   s=clamp(s,0,RUTA.len);
@@ -891,8 +1104,8 @@ function alongRoute(s){
 }
 
 /* ===================== Estado ===================== */
-const S={doy:247,hour:18.5,pot:90,sep:35,alt:9,ancho:7,disp:'uni',avance:0.5,incl:5,
-         umb:30,fm:.80,dim:false,efic:120,rend:.92,tarifa:850,clase:'M4',pav:'R3',q0:0.07,crit:'E'};
+const S={doy:247,hour:18.5,pot:90,sep:35,alt:9,ancho:7,disp:'uni',avance:0.5,incl:5,brazo:2.0,sepAncho:2.0,sepAlto:0.20,
+         umb:30,fm:.80,dim:false,efic:120,rend:.92,tarifa:850,clase:'M4',pav:'R3',q0:0.07,crit:'E',norma:'2024'};
 const PERD=1.08, RETARDO=40/3600;
 
 /* ===================== Sol y luz natural ===================== */
@@ -931,6 +1144,93 @@ function schedule(doy){
 function lampsOn(sc,h){return sc.win.some(w=>h>=w[0]&&h<w[1]);}
 function dimFactor(h){return (S.dim&&(h>=23||h<4.5))?0.6:1;}
 
+/* ===================== Fotometría real: archivos IES (LM-63) ===================== */
+let IES=null;
+function parseIES(txt){
+  const lineas=txt.split(/\r?\n/);
+  let i=0, keys={};
+  while(i<lineas.length && !/^\s*TILT\s*=/i.test(lineas[i])){
+    const m=lineas[i].match(/^\s*\[([^\]]+)\]\s*(.*)$/);
+    if(m)keys[m[1].toUpperCase()]=m[2].trim();
+    i++;
+  }
+  if(i>=lineas.length)throw new Error('no se encontró la línea TILT');
+  const tilt=lineas[i].split('=')[1].trim().toUpperCase(); i++;
+  if(tilt!=='NONE'){                                    // se saltan los datos de inclinación del archivo
+    const t1=lineas[i].trim().split(/\s+/); i++;
+    const n=parseInt(lineas[i].trim(),10)||0; i++;
+    let leidos=0; while(leidos<n*2 && i<lineas.length){leidos+=lineas[i].trim().split(/\s+/).length;i++;}
+  }
+  const nums=[];
+  for(;i<lineas.length;i++){
+    const l=lineas[i].trim(); if(!l)continue;
+    l.split(/[\s,]+/).forEach(v=>{const x=parseFloat(v);if(isFinite(x))nums.push(x);});
+  }
+  let k=0;
+  const nLamp=nums[k++], lmLamp=nums[k++], mult=nums[k++], nV=nums[k++], nH=nums[k++];
+  const tipo=nums[k++], unidades=nums[k++], anc=nums[k++], lar=nums[k++], altF=nums[k++];
+  const bf=nums[k++]; k++; const watts=nums[k++];
+  const vert=nums.slice(k,k+nV); k+=nV;
+  const horiz=nums.slice(k,k+nH); k+=nH;
+  const cand=[];
+  for(let h=0;h<nH;h++){cand.push(nums.slice(k,k+nV).map(v=>v*mult*(bf||1)));k+=nV;}
+  if(!vert.length||!horiz.length||!cand.length||cand[0].length!==nV)
+    throw new Error('la tabla de intensidades está incompleta');
+  // Flujo total por integración de la tabla
+  let flujo=0;
+  for(let v=0;v<nV;v++){
+    const g0=v===0?vert[0]:(vert[v-1]+vert[v])/2, g1=v===nV-1?vert[nV-1]:(vert[v]+vert[v+1])/2;
+    const dOmega=2*Math.PI*Math.abs(Math.cos(g0*D)-Math.cos(g1*D));
+    let media=0;for(let h=0;h<nH;h++)media+=cand[h][v];media/=nH;
+    flujo+=media*dOmega;
+  }
+  const mfac=(unidades===1)?0.3048:1;                   // pies a metros si el archivo viene en unidades imperiales
+  return {vert:vert,horiz:horiz,cand:cand,nV:nV,nH:nH,flujo:flujo,watts:watts||0,
+          lmLamp:lmLamp,keys:keys,anc:Math.abs(anc)*mfac,lar:Math.abs(lar)*mfac,alt:Math.abs(altF)*mfac,tipo:tipo};
+}
+/* Intensidad interpolada en el sistema del archivo: γ desde el nadir, C azimutal */
+function iesI(gDeg,cDeg){
+  const V=IES.vert,H=IES.horiz;
+  let g=clamp(gDeg,V[0],V[V.length-1]);
+  let c=((cDeg%360)+360)%360;
+  const hmax=H[H.length-1];
+  if(hmax<=0.001)c=0;                                    // simetría de revolución
+  else if(hmax<=90.001){ if(c>180)c=360-c; if(c>90)c=180-c; }   // simetría en cuadrante
+  else if(hmax<=180.001){ if(c>180)c=360-c; }                   // simetría bilateral
+  const iv=(()=>{let a=0;while(a<V.length-2&&V[a+1]<g)a++;return a;})();
+  const tv=(g-V[iv])/Math.max(1e-6,V[iv+1]-V[iv]);
+  const ih=(()=>{if(H.length<2)return 0;let a=0;while(a<H.length-2&&H[a+1]<c)a++;return a;})();
+  const th=H.length<2?0:(c-H[ih])/Math.max(1e-6,H[ih+1]-H[ih]);
+  const c00=IES.cand[ih][iv], c01=IES.cand[ih][Math.min(iv+1,V.length-1)];
+  const ih2=Math.min(ih+1,H.length-1);
+  const c10=IES.cand[ih2][iv], c11=IES.cand[ih2][Math.min(iv+1,V.length-1)];
+  const a=c00+(c01-c00)*clamp(tv,0,1), b=c10+(c11-c10)*clamp(tv,0,1);
+  return a+(b-a)*clamp(th,0,1);
+}
+$('#iesFile').addEventListener('change',async e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  try{
+    IES=parseIES(await f.text());
+    $('#iesEstado').textContent='archivo '+f.name.slice(0,18);
+    const nom=IES.keys['LUMINAIRE']||IES.keys['LUMCAT']||IES.keys['MANUFAC']||f.name;
+    $('#iesInfo').textContent='Fotometría real: '+nom+' · '+Math.round(IES.flujo).toLocaleString('es-CO')+' lm'+
+      (IES.watts?' · '+fmt(IES.watts,0)+' W ('+fmt(IES.flujo/IES.watts,0)+' lm/W)':'')+
+      (IES.anc?' · cuerpo '+fmt(IES.lar,2)+' × '+fmt(IES.anc,2)+' m':'')+
+      '. La malla y el video usan esta curva.';
+    if(IES.watts>0){S.pot=Math.round(IES.watts);$('#pot').value=S.pot;$('#potV').textContent=S.pot+' W';}
+    dirty=true;render();
+  }catch(err){
+    $('#iesInfo').textContent='No se pudo leer el archivo: '+((err&&err.message)||'formato no reconocido')+
+      '. Debe ser un .ies en formato IESNA LM-63.';
+  }
+  e.target.value='';
+});
+$('#iesReset').addEventListener('click',()=>{
+  IES=null;$('#iesEstado').textContent='modelo genérico';
+  $('#iesInfo').textContent='Con el archivo fotométrico del fabricante, la malla se calcula con la curva real de la luminaria en lugar del modelo aproximado.';
+  dirty=true;render();
+});
+
 /* ===================== Fotometría ===================== */
 /* Distribución vial simétrica de revolución: pico hacia 65°, corte a 82° */
 function gDist(g){
@@ -939,7 +1239,13 @@ function gDist(g){
   return (1+2.6*s*s)*cut;
 }
 const I0N=(function(){let sum=0,N=900;for(let i=0;i<N;i++){const g=(i+.5)/N*(Math.PI/2);sum+=gDist(g)*2*Math.PI*Math.sin(g)*(Math.PI/2/N);}return sum;})();
-function flujoLum(st){return st.pot*st.efic*st.rend;}
+function flujoLum(st){return IES?IES.flujo:(st.pot*st.efic*st.rend);}
+/* Banda de calzada donde se verifica: con andén central se toma una sola calzada */
+function bandaCalzada(st){
+  st=st||S;
+  if(st.disp==='central'){const a=st.sepAncho/2;return {y0:a,y1:a+st.ancho};}
+  return {y0:-st.ancho/2,y1:st.ancho/2};
+}
 /* Luminarias de un tramo largo, con avance sobre la calzada e inclinación */
 function luminaires(st){
   const out=[],w=st.ancho;
@@ -950,6 +1256,12 @@ function luminaires(st){
   for(let k=-4;k<=5;k++){
     if(st.disp==='uni') out.push({x:k*st.sep,y:yA,e:ejeA});
     else if(st.disp==='par'){out.push({x:k*st.sep,y:yA,e:ejeA});out.push({x:k*st.sep,y:yB,e:ejeB});}
+    else if(st.disp==='central'){
+      // poste en el andén central con dos brazos, uno sobre cada calzada
+      const b=st.sepAncho/2+st.avance;
+      out.push({x:k*st.sep,y:-b,e:ejeB});               // brazo hacia la calzada izquierda
+      out.push({x:k*st.sep,y: b,e:ejeA});               // brazo hacia la calzada derecha
+    }
     else {out.push({x:k*st.sep,y:yA,e:ejeA});out.push({x:k*st.sep+st.sep/2,y:yB,e:ejeB});}
   }
   return out;
@@ -964,7 +1276,14 @@ function iluminancia(x,y,lums,st){
     const cosg=(dy*L.e.y+dz*L.e.z)/d;                    // ángulo respecto al eje de la luminaria
     if(cosg<=0)continue;
     const g=Math.acos(clamp(cosg,-1,1));
-    E+=I0*gDist(g)/d2*(h/d);                             // ley del coseno sobre plano horizontal
+    let I;
+    if(IES){
+      // C se mide desde el eje de la vía; el plano transversal es C = 90°
+      const py=dy*(-L.e.z)-dz*(-L.e.y);                  // componente lateral en el plano del luminario
+      const cang=Math.atan2(py,dx)*R2D;
+      I=iesI(g*R2D,cang);
+    } else I=I0*gDist(g);
+    E+=I/d2*(h/d);                                       // ley del coseno sobre plano horizontal
   }
   return E*st.fm;
 }
@@ -982,7 +1301,9 @@ function velo(st,lums,x0,y0){
     const cosg=(-vy*L.e.y-vz*L.e.z)/d;
     if(cosg<=0)return;
     const g=Math.acos(clamp(cosg,-1,1));
-    const Eojo=I0*gDist(g)*st.fm/(d*d)*Math.max(0,cosT);
+    const py=(-vy)*(-L.e.z)-(-vz)*(-L.e.y);
+    const I=IES?iesI(g*R2D,Math.atan2(py,-vx)*R2D):I0*gDist(g);
+    const Eojo=I*st.fm/(d*d)*Math.max(0,cosT);
     Lv+=10*Eojo/(th*th);
   });
   return Lv;
@@ -990,7 +1311,7 @@ function velo(st,lums,x0,y0){
 /* Malla según 530.3.2 + uniformidades, SR, TI y luminancia */
 function evaluar(st){
   st=st||S;
-  const lums=luminaires(st), w=st.ancho;
+  const lums=luminaires(st), w=st.ancho, bd=bandaCalzada(st);
   const N = st.sep<=30 ? 10 : Math.ceil(st.sep/3);
   const carriles=Math.max(1,Math.round(w/3.5)), nT=3*carriles;
   let sum=0,n=0,min=1e9,max=0;
@@ -998,7 +1319,7 @@ function evaluar(st){
   for(let i=0;i<N;i++){
     const x=(i+0.5)*st.sep/N; const fila=[];
     for(let j=0;j<nT;j++){
-      const y=-w/2+w*(j+0.5)/nT, E=iluminancia(x,y,lums,st);
+      const y=bd.y0+(bd.y1-bd.y0)*(j+0.5)/nT, E=iluminancia(x,y,lums,st);
       sum+=E;n++;if(E<min)min=E;if(E>max)max=E;fila.push(E);
     }
     filas.push({x:x,E:fila});
@@ -1007,7 +1328,7 @@ function evaluar(st){
   // Uniformidad longitudinal: peor eje de carril
   let ul=1;
   for(let c=0;c<carriles;c++){
-    const y=-w/2+w*(c+0.5)/carriles;
+    const y=bd.y0+(bd.y1-bd.y0)*(c+0.5)/carriles;
     let mn=1e9,mx=0;
     for(let i=0;i<N;i++){const E=iluminancia((i+0.5)*st.sep/N,y,lums,st);if(E<mn)mn=E;if(E>mx)mx=E;}
     ul=Math.min(ul,mn/Math.max(mx,1e-6));
@@ -1016,52 +1337,65 @@ function evaluar(st){
   const fr=Math.min(5,w/2);
   const bandE=(y0,y1)=>{let s=0,c=0;for(let i=0;i<N;i++){const x=(i+0.5)*st.sep/N;
     for(let j=0;j<4;j++){s+=iluminancia(x,y0+(y1-y0)*(j+.5)/4,lums,st);c++;}}return s/c;};
-  const srIzq=bandE(-w/2-fr,-w/2)/Math.max(1e-6,bandE(-w/2,-w/2+fr));
-  const srDer=bandE(w/2,w/2+fr)/Math.max(1e-6,bandE(w/2-fr,w/2));
+  const srIzq=bandE(bd.y0-fr,bd.y0)/Math.max(1e-6,bandE(bd.y0,bd.y0+fr));
+  const srDer=bandE(bd.y1,bd.y1+fr)/Math.max(1e-6,bandE(bd.y1-fr,bd.y1));
   const sr=Math.min(srIzq,srDer);
   // Incremento de umbral: peor posición del observador dentro del vano
   const Lmed=st.q0*med;
   let Lv=0;
-  for(let k=0;k<4;k++) Lv=Math.max(Lv,velo(st,lums,-60-k*st.sep/4,-w/4));
+  const yObs=(bd.y0+bd.y1)/2;
+  for(let k=0;k<4;k++) Lv=Math.max(Lv,velo(st,lums,-60-k*st.sep/4,yObs));
   const ti = Lmed>0.02 ? 65*Lv/Math.pow(Lmed,0.8) : 0;
   // Perfil sobre el eje para la gráfica
   const perfil=[];
-  for(let i=0;i<=24;i++){const x=st.sep*i/24;perfil.push({x:x,E:iluminancia(x,0,lums,st)});}
+  for(let i=0;i<=24;i++){const x=st.sep*i/24;perfil.push({x:x,E:iluminancia(x,(bd.y0+bd.y1)/2,lums,st)});}
   return {med:med,min:min,max:max,uo:min/Math.max(med,1e-6),ul:ul,sr:sr,ti:ti,L:Lmed,
           N:N,nT:nT,carriles:carriles,perfil:perfil};
 }
 
 /* ===================== Requisitos y cumplimiento ===================== */
 function requisitos(){
-  const c=CLASES[S.clase], il=ILUM[S.clase];
-  const Eexig = il ? il[S.pav] : c.L/S.q0;            // M1 y M2 se verifican por luminancia
-  const Uoexig = il ? il.Uo : c.Uo;
-  const porL = !il || S.crit==='L';
-  return {L:c.L,Uo:c.Uo,Ul:c.Ul,TI:c.TI,SR:c.SR,E:Eexig,UoE:porL?c.Uo:Uoexig,derivado:!il,porL:porL,
-          Eref: porL ? c.L/S.q0 : Eexig};
+  const c=CLASES[S.clase]||CLASES.M4, il=ILUM[S.clase], o=ovrActual();
+  const man=v=>(v!==undefined&&v!==null&&isFinite(v))?+v:null;   // valor escrito por el proyectista
+  const L  = man(o.L )!==null ? man(o.L ) : c.L;
+  const Uo = man(o.Uo)!==null ? man(o.Uo) : c.Uo;
+  const Ul = ('Ul' in o) ? man(o.Ul) : c.Ul;                      // null = no requerido
+  const TI = man(o.TI)!==null ? man(o.TI) : c.TI;
+  const SR = ('SR' in o) ? man(o.SR) : c.SR;
+  const Etab = il ? il[S.pav] : null;                             // tabla de iluminancia, si la norma la trae
+  const Eman = man(o.E);
+  const hayE = Eman!==null || Etab!==null;                        // sin tabla ni valor manual se verifica por luminancia
+  const Eexig = Eman!==null ? Eman : (Etab!==null ? Etab : L/S.q0);
+  const UoEtab = il ? il.Uo : Uo;
+  const porL = !hayE || S.crit==='L';
+  return {L:L,Uo:Uo,Ul:Ul,TI:TI,SR:SR,E:Eexig,UoE:porL?Uo:UoEtab,derivado:!hayE,porL:porL,
+          manual:hayOvr(), Eref: porL ? L/S.q0 : Eexig};
 }
 function verificar(m,st){
   st=st||S;
   const r=requisitos(), pot=nLum(st)*st.pot*PERD, area=RUTA.len*st.ancho;
   const dp=pot/area, dpMax=dpeaMax(m.med,st.ancho);
-  const porL = r.porL;                               // M1 y M2 sólo admiten el criterio de luminancia
+  const porL = r.porL;                               // sin tabla de iluminancia sólo cabe el criterio de luminancia
+  const tabL = S.norma==='2010' ? 'tabla 510.2.1.a' : 'clases M · '+NORMAS['2024'].nom;
+  const tabE = S.norma==='2010' ? 'tabla 510.2.1.b · '+S.pav : 'valor escrito por el proyectista';
   const filas=[
     {p:'Luminancia media mantenida L',u:'cd/m²',ex:r.L,va:m.L,ok:porL?(m.L>=r.L):null,d:2,cmp:'≥',
-     nota:porL?'criterio aplicado · tabla 510.2.1.a':'referencia'},
+     nota:porL?('criterio aplicado · '+tabL):'referencia'},
     {p:'Iluminancia media mantenida E',u:'lux',ex:r.E,va:m.med,ok:porL?null:(m.med>=r.E),d:1,cmp:'≥',
-     nota:r.derivado?'derivada de L/q₀ · referencia':(porL?'referencia':'criterio aplicado · tabla 510.2.1.b · '+S.pav)},
+     nota:r.derivado?'derivada de L/q₀ · referencia':(porL?'referencia':'criterio aplicado · '+tabE)},
     {p:'Uniformidad general U₀',u:'',ex:r.UoE,va:m.uo,ok:m.uo>=r.UoE,d:2,cmp:'≥'},
     {p:'Uniformidad longitudinal U'+'ₗ',u:'',ex:r.Ul,va:m.ul,ok:r.Ul===null?null:m.ul>=r.Ul,d:2,cmp:'≥'},
     {p:'Incremento de umbral TI',u:'%',ex:r.TI,va:m.ti,ok:m.ti<=r.TI,d:1,cmp:'≤'},
     {p:'Relación de alrededores SR',u:'',ex:r.SR,va:m.sr,ok:r.SR===null?null:m.sr>=r.SR,d:2,cmp:'≥'},
-    {p:'Densidad de potencia DPEA',u:'W/m²',ex:dpMax,va:dp,ok:dp<=dpMax,d:2,cmp:'≤',nota:'tabla 510.6.1 interpolada'}
+    {p:'Densidad de potencia DPEA',u:'W/m²',ex:dpMax,va:dp,ok:dp<=dpMax,d:2,cmp:'≤',
+     nota:'tabla 510.6.1 interpolada · límite de eficiencia energética'}
   ];
   return {filas:filas,cumple:filas.every(f=>f.ok!==false),dp:dp,dpMax:dpMax};
 }
 
 /* ===================== Cantidades ===================== */
 function nPostes(st){return Math.floor(RUTA.len/(st||S).sep)+1;}
-function nLum(st){st=st||S;return nPostes(st)*(st.disp==='par'?2:1);}
+function nLum(st){st=st||S;return nPostes(st)*((st.disp==='par'||st.disp==='central')?2:1);}
 function potCircuito(st){st=st||S;return nLum(st)*st.pot*PERD/1000;}
 function energiaDia(sc){let e=0;sc.win.forEach(w=>{for(let h=w[0];h<w[1];h+=1/60)e+=potCircuito()*dimFactor(h)/60;});return e;}
 const MES_DOY=[17,47,75,105,135,162,198,228,258,288,318,344];
@@ -1090,19 +1424,26 @@ function drawMap(alt,on){
   const k=Math.min((w-padX*2)/(x1-x0),(h-padT-padB)/(y1-y0));
   const ox=(w-(x1-x0)*k)/2-x0*k, oy=padT+((h-padT-padB)-(y1-y0)*k)/2-y0*k;
   const P=p=>({x:ox+p.x*k,y:oy+p.y*k});
-  mx.fillStyle=alt>-1?'rgba(52,74,46,.42)':'rgba(18,32,26,.55)';
-  [[0.10,0.70,110],[0.22,0.86,90],[0.62,0.20,120],[0.86,0.34,90],[0.44,0.08,70]].forEach(b=>{
-    mx.beginPath();mx.ellipse(b[0]*w,b[1]*h,b[2],b[2]*0.62,0.4,0,6.2832);mx.fill();});
+  MAPT={ox:ox,oy:oy,k:k};
+  if(FONDO.img){
+    const q0=P(fondoXY(0,0)), q1=P(fondoXY(FONDO.img.width,0)), q3=P(fondoXY(0,FONDO.img.height));
+    mx.save();
+    mx.transform((q1.x-q0.x)/FONDO.img.width,(q1.y-q0.y)/FONDO.img.width,
+                 (q3.x-q0.x)/FONDO.img.height,(q3.y-q0.y)/FONDO.img.height,q0.x,q0.y);
+    mx.globalAlpha=FONDO.op;mx.drawImage(FONDO.img,0,0);mx.globalAlpha=1;
+    mx.restore();
+    if(alt<=-1){mx.fillStyle='rgba(6,10,16,.55)';mx.fillRect(0,0,w,h);}
+  } else {
+    mx.fillStyle=alt>-1?'rgba(52,74,46,.42)':'rgba(18,32,26,.55)';
+    [[0.10,0.70,110],[0.22,0.86,90],[0.62,0.20,120],[0.86,0.34,90],[0.44,0.08,70]].forEach(b=>{
+      mx.beginPath();mx.ellipse(b[0]*w,b[1]*h,b[2],b[2]*0.62,0.4,0,6.2832);mx.fill();});
+  }
   mx.lineCap='round';mx.lineJoin='round';
   mx.strokeStyle='rgba(12,16,18,.55)';mx.lineWidth=11;
   mx.beginPath();RUTA.pts.forEach((p,i)=>{const q=P(p);i?mx.lineTo(q.x,q.y):mx.moveTo(q.x,q.y);});mx.stroke();
   mx.strokeStyle=alt>-1?'#C9C3B4':'#6E7370';mx.lineWidth=7;
   mx.beginPath();RUTA.pts.forEach((p,i)=>{const q=P(p);i?mx.lineTo(q.x,q.y):mx.moveTo(q.x,q.y);});mx.stroke();
-  if(RUTA_PROPIA){
-    const fin=P(RUTA.pts[RUTA.pts.length-1]);
-    mx.strokeStyle='#D8B24A';mx.lineWidth=5;
-    mx.beginPath();mx.moveTo(fin.x+22,fin.y-130);mx.quadraticCurveTo(fin.x+6,fin.y-40,fin.x+1,fin.y);mx.lineTo(fin.x-8,fin.y+46);mx.stroke();
-  }
+  // el empalme con la Troncal queda señalado por el hito del extremo sur
   const nP=nPostes();
   const rad=Math.max(8,S.sep*k*0.62);
   for(let i=0;i<nP;i++){
@@ -1137,6 +1478,17 @@ function drawMap(alt,on){
     mx.strokeStyle='rgba(6,12,16,.75)';mx.lineWidth=3.4;mx.strokeText(hh.l,lx,ly);
     mx.fillStyle=t.ink;mx.fillText(hh.l,lx,ly);
   });
+  if(!CARGADO){
+    mx.fillStyle='rgba(6,12,16,.62)';mx.fillRect(0,0,w,h);
+    mx.textAlign='center';mx.textBaseline='middle';
+    mx.fillStyle='rgba(255,255,255,.95)';
+    mx.font='600 17px Bahnschrift, DIN Alternate, system-ui, sans-serif';
+    mx.fillText('Cargue el KML o KMZ de la vía',w/2,h/2-10);
+    mx.font='13px Segoe UI, system-ui, sans-serif';
+    mx.fillStyle='rgba(226,238,235,.8)';
+    mx.fillText('De ese archivo salen el trazado, la ubicación y la descripción del proyecto',w/2,h/2+14);
+    mx.fillText('Lo que se ve ahora es un trazado de ejemplo',w/2,h/2+34);
+  }
   const esc=500*k;
   mx.strokeStyle='rgba(255,255,255,.7)';mx.lineWidth=2;
   mx.beginPath();mx.moveTo(16,h-18);mx.lineTo(16+esc,h-18);mx.moveTo(16,h-22);mx.lineTo(16,h-14);
@@ -1369,7 +1721,7 @@ function render(){
   const pk=potCircuito()*(on?dimFactor(S.hour):0), dia=energiaDia(sc), mes=dia*30.4;
   $('#kPot').innerHTML=fmt(pk,2)+'<span>kW</span>';
   $('#kLux').innerHTML=(lux>=10?Math.round(lux).toLocaleString('es-CO'):fmt(lux,lux<1?3:2))+'<span>lux</span>';
-  $('#kPostes').textContent=nPostes()+(S.disp==='par'?' · '+nLum()+' luminarias':'');
+  $('#kPostes').textContent=nPostes()+((S.disp==='par'||S.disp==='central')?' · '+nLum()+' luminarias':'');
   $('#kHoras').innerHTML=fmt(sc.horas,1)+'<span>h</span>';
   $('#kDia').innerHTML=fmt(dia,1)+'<span>kWh</span>';
   $('#kSH').innerHTML=fmt(S.sep/S.alt,1)+'<span>S/H</span>';
@@ -1406,31 +1758,84 @@ function render(){
   vd.className='verdict '+(v.cumple?'ok':'no');
   vd.textContent=v.cumple?('El diseño cumple la clase '+S.clase+' · '+nLum()+' luminarias de '+S.pot+' W cada '+S.sep+' m')
     :('El diseño no alcanza la clase '+S.clase+' · revise los parámetros marcados');
-  $('#claseDesc').textContent=CLASES[S.clase].via;
+  $('#claseDesc').textContent=(CLASES[S.clase]||CLASES.M4).via+' · nivel exigido L '+fmt(req.L,2)+' cd/m²'+
+    (req.manual?' (ajustado a mano)':'');
   $('#critV').textContent=req.porL?'por luminancia':'por iluminancia';
   $('#retNote').textContent='Malla de '+m.N+' × '+m.nT+' puntos entre postes ('+m.carriles+
     ' carril'+(m.carriles>1?'es':'')+') · relación S/H '+fmt(S.sep/S.alt,1)+
     ' · flujo por luminaria '+Math.round(flujoLum(S)).toLocaleString('es-CO')+' lm · '+
-    (requisitos().derivado?'en M1 y M2 el RETILAP exige verificar por luminancia; la iluminancia mostrada se deriva de L/q₀.'
+    (req.derivado?'la clase se verifica por luminancia; la iluminancia mostrada se deriva de E = L/q₀.'
       :'nivel de iluminancia tomado de la tabla 510.2.1.b para pavimento '+S.pav+'.');
+  pintarNiveles();
 
   chartLux(sc);chartPow(sc);chartProf(m,req);chartMon(an);chartSweep(req);
   pintarPresupuesto();
+  actualizarIdentidad();
+  sincronizarChat();
   if(!V3.anim&&!V3.grabando)pintar3D(0.08);
   $('#v3info').textContent='sobre '+RUTA_NOMBRE.slice(0,40)+' · '+nPostes()+' postes';
 }
 
+/* Descripción del proyecto construida con la zona geográfica del archivo */
+function descripcionZona(){
+  const ref=refGeografica(SITE.lat,SITE.lon);
+  const reg=REGION[ref.depto]||'';
+  let smin=24,smax=0;
+  for(let d=1;d<=365;d+=5){const o=sunEvent(d,false);if(o<smin)smin=o;if(o>smax)smax=o;}
+  let horas=0;for(let m=0;m<12;m++)horas+=schedule(MES_DOY[m]).horas*MES_D[m];
+  const km=(RUTA.len/1000).toFixed(2).replace('.',',');
+  let t='Corredor de '+km+' km';
+  if(ref.depto)t+=' en '+ref.depto+(reg?', '+reg:'')+' de Colombia';
+  if(ref.texto)t+=', '+ref.texto;
+  t+='. Coordenadas de referencia '+fmt(SITE.lat,4)+'° N, '+fmt(Math.abs(SITE.lon),4)+'° O';
+  if(RUTA_ALT&&RUTA_ALT.desnivel>2)
+    t+='; cotas entre '+Math.round(RUTA_ALT.min)+' y '+Math.round(RUTA_ALT.max)+' m s. n. m., con '+
+       Math.round(RUTA_ALT.desnivel)+' m de desnivel';
+  t+='. En esta latitud el ocaso se mueve entre las '+hhmm(smin)+' y las '+hhmm(smax)+' a lo largo del año, '+
+     'lo que da unas '+Math.round(horas).toLocaleString('es-CO')+' horas de encendido anuales.';
+  return {texto:t,depto:ref.depto,region:reg,ocasoMin:smin,ocasoMax:smax,horasAno:horas};
+}
+
+/* Identidad del proyecto tomada del trazado cargado */
+function actualizarIdentidad(){
+  const z=descripcionZona();
+  if(!CARGADO){
+    $('#badgeSitio').textContent='Sin proyecto cargado';
+    $('#leadTxt').textContent='Diseño y verificación RETILAP de alumbrado público vial. Cargue el KML o KMZ del corredor: '+
+      'de allí salen la geometría, la longitud y la ubicación del proyecto, y con ellas la descripción, la hora de encendido '+
+      'por fotocelda y toda la memoria de cálculo. Mientras tanto se muestra un trazado de ejemplo.';
+    $('#pieTrazado').textContent='Sin proyecto cargado · se muestra un trazado de ejemplo de '+
+      RUTA_M.toLocaleString('es-CO')+' m';
+    $('#pieMapa').textContent='Trazado de ejemplo — cargue el KML o KMZ de su vía';
+    $('#rutaNom').textContent='Trazado · sin proyecto cargado';
+    return;
+  }
+  $('#badgeSitio').textContent=z.depto?(z.depto+' · '+fmt(Math.abs(SITE.lat),2)+'° N'):
+    (fmt(Math.abs(SITE.lat),3)+'° N '+fmt(Math.abs(SITE.lon),3)+'° O');
+  $('#leadTxt').textContent='Alumbrado público de '+RUTA_NOMBRE+'. '+z.texto+
+    ' El diseño se verifica contra la clase de vía escogida del RETILAP.';
+  $('#pieTrazado').textContent='Trazado: '+RUTA_FUENTE+' · '+RUTA.pts.length+' vértices · '+
+    RUTA_M.toLocaleString('es-CO')+' m · '+fmt(SITE.lat,5)+'° N, '+fmt(Math.abs(SITE.lon),5)+'° O';
+  if(PROY.auto!==false){                                   // mientras el usuario no escriba lo suyo
+    PROY.proy=RUTA_NOMBRE;
+    const ref=refGeografica(SITE.lat,SITE.lon);
+    PROY.mun=ref.texto?('Referencia: '+ref.texto):'';
+    ['proy','mun'].forEach(k=>{const i=document.querySelector('.ficha-grid input[data-k="'+k+'"]');if(i)i.value=PROY[k]||'';});
+    pintarMembrete();
+  }
+}
+
 /* ===================== Membrete, ficha y logos ===================== */
-const PROY={proy:'Alumbrado público vía Las Flores',cod:'AP-2026-LF-RCH',cli:'',con:'',
-  mun:'Dibulla, La Guajira',rev:'A',ela:'Ing. Aníbal Brito Vidal · M.P. AN205-89729',revi:'',
-  emp:'AB Creaciones Eléctricas S.A.S',nit:''};
+const PROY={proy:'',cod:'AP-2026-001',cli:'',con:'',
+  mun:'',rev:'A',ela:'Ing. Aníbal Brito Vidal · M.P. AN205-89729',revi:'',
+  emp:'AB Creaciones Eléctricas S.A.S',nit:'',auto:true};
 const LOGOS={l1:null,l2:null};
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
 function cargarFicha(){
   try{const raw=store('ap_ficha');if(raw)Object.assign(PROY,JSON.parse(raw));}catch(e){}
   document.querySelectorAll('.ficha-grid input').forEach(i=>{
     i.value=PROY[i.dataset.k]||'';
-    i.addEventListener('input',()=>{PROY[i.dataset.k]=i.value;
+    i.addEventListener('input',()=>{PROY[i.dataset.k]=i.value;PROY.auto=false;
       try{store('ap_ficha',JSON.stringify(PROY));}catch(e){}
       pintarMembrete();});
   });
@@ -1484,7 +1889,7 @@ function buildPrintDoc(){
   const dia=energiaDia(sc2),mes=dia*30.4,anio=(an?an.total:dia*365);
   const hoy=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
   const lampTxt=$('#lamp').options[$('#lamp').selectedIndex].text;
-  const dispTxt={uni:'Unilateral',tres:'Bilateral tresbolillo',par:'Bilateral pareada'}[S.disp];
+  const dispTxt={uni:'Unilateral',tres:'Bilateral tresbolillo',par:'Bilateral pareada',central:'Andén central con doble brazo'}[S.disp];
 
   const lg1=LOGOS.l1?'<img src="'+LOGOS.l1+'" alt="">':LOGO_DEF;
   const lg2=LOGOS.l2?'<img src="'+LOGOS.l2+'" alt="">':'';
@@ -1501,11 +1906,21 @@ function buildPrintDoc(){
   h+='<div class="p-cols"><div><h2>1. Datos del proyecto</h2><table class="p-tab">'+
     fila('Vía',RUTA_NOMBRE)+
     fila('Longitud del trazado',RUTA_M.toLocaleString('es-CO')+' m · '+RUTA_FUENTE)+
-    fila('Coordenadas de referencia',fmt(SITE.lat,4)+'° N · '+fmt(Math.abs(SITE.lon),4)+'° O')+
+    fila('Coordenadas de referencia',fmt(SITE.lat,5)+'° N · '+fmt(Math.abs(SITE.lon),5)+'° O')+
+    fila('Ubicación aproximada',refGeografica(SITE.lat,SITE.lon).texto||'—')+
+    fila('Contexto geográfico',descripcionZona().texto)+
     fila('Huso horario','UTC '+SITE.tz)+
     fila('Fecha de análisis',new Date($('#date').value+'T12:00:00').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'}))+
-    fila('Clase de iluminación',S.clase+' — '+CLASES[S.clase].via)+
-    fila('Criterio de verificación',req.porL?'Luminancia (tabla 510.2.1.a)':'Iluminancia (tabla 510.2.1.b)')+
+    fila('Norma aplicada',NORMAS[S.norma].nom+' — '+NORMAS[S.norma].ref)+
+    fila('Clase de iluminación',S.clase+' — '+(CLASES[S.clase]||CLASES.M4).via)+
+    fila('Nivel exigido',
+      'L ≥ '+fmt(req.L,2)+' cd/m² · U₀ ≥ '+fmt(req.UoE,2)+
+      (req.Ul!==null?' · Uₗ ≥ '+fmt(req.Ul,2):' · Uₗ no exigida')+
+      ' · TI ≤ '+fmt(req.TI,0)+' %'+(req.SR!==null?' · SR ≥ '+fmt(req.SR,2):' · SR no exigida')+
+      (req.derivado?'':' · E ≥ '+fmt(req.E,1)+' lux'))+
+    fila('Criterio de verificación',(req.porL?'Luminancia':'Iluminancia')+
+      (S.norma==='2010'?(req.porL?' (tabla 510.2.1.a)':' (tabla 510.2.1.b · pavimento '+S.pav+')'):''))+
+    (req.manual?fila('Observación','Uno o más niveles exigidos fueron ajustados manualmente por el proyectista respecto de la tabla de la norma seleccionada.'):'')+
     '</table></div>';
 
   h+='<div><h2>2. Parámetros de diseño</h2><table class="p-tab">'+
@@ -1515,7 +1930,8 @@ function buildPrintDoc(){
     fila('Interdistancia',S.sep+' m (S/H '+fmt(S.sep/S.alt,2)+')')+
     fila('Altura de montaje',fmt(S.alt,1)+' m')+
     fila('Disposición',dispTxt)+
-    fila('Ancho de calzada',fmt(S.ancho,1)+' m · '+m.carriles+' carril'+(m.carriles>1?'es':''))+
+    fila('Ancho de calzada',fmt(S.ancho,1)+' m · '+m.carriles+' carril'+(m.carriles>1?'es':'')+(S.disp==='central'?' por calzada':''))+
+    (S.disp==='central'?fila('Andén central',fmt(S.sepAncho,1)+' m de ancho · '+fmt(S.sepAlto,2)+' m sobre la calzada'):'')+
     fila('Avance sobre la calzada',fmt(S.avance,1)+' m')+
     fila('Inclinación de la luminaria',S.incl+'°')+
     fila('Factor de mantenimiento',fmt(S.fm,2))+
@@ -1592,6 +2008,7 @@ function buildPrintDoc(){
   h+='<tr><td colspan="3"><b>Costo directo</b></td><td class="n"><b>'+money(PR.directo)+'</b></td></tr>'+
      '<tr><td colspan="3">AIU ('+PRECIOS.aiuPct+' %)</td><td class="n">'+money(PR.aiu)+'</td></tr>'+
      '<tr><td colspan="3">IVA ('+PRECIOS.ivaPct+' % sobre suministros y utilidad)</td><td class="n">'+money(PR.iva)+'</td></tr>'+
+     PR.cargas.map(cg=>'<tr><td colspan="3">'+esc(cg.n)+' ('+cg.pct+' %)</td><td class="n">'+money(cg.total)+'</td></tr>').join('')+
      '<tr><td colspan="3"><b>COSTO BRUTO DEL PROYECTO</b></td><td class="n"><b>'+money(PR.bruto)+'</b></td></tr>'+
      '</tbody></table>'+
     '<table class="p-tab" style="margin-top:8px">'+
@@ -1601,6 +2018,7 @@ function buildPrintDoc(){
     fila('Puesta a tierra',PR.nspt+' kits SPT (varilla de cobre 5/8"×2,4 m con conector y conductor)')+
     fila('Costo por kilómetro',money(PR.bruto/Math.max(RUTA.len/1000,.01)))+
     fila('Costo por luminaria',money(PR.bruto/Math.max(PR.nl,1)))+
+    fila('Naturaleza del contrato',PRE.publico?'Público — incluye cargas de ley':'Privado')+
     '</table>';
 
   h+='<div class="pg"><h2>9. Método y alcance</h2>'+
@@ -1617,6 +2035,305 @@ function buildPrintDoc(){
 $('#printBtn').addEventListener('click',()=>{buildPrintDoc();setTimeout(()=>window.print(),60);});
 window.addEventListener('beforeprint',buildPrintDoc);
 
+/* ===================== Fondo georreferenciado (captura de Google Earth) ===================== */
+const FONDO={img:null,mpp:1,mppy:1,rot:0,dx:0,dy:0,cx:0,cy:0,exacto:false,op:1};
+let MAPT={ox:0,oy:0,k:1};
+let alinear={activo:false,p1:null};
+function centrarFondo(){
+  // una imagen georreferenciada ya está amarrada a coordenadas: no se recentra nunca
+  if(FONDO.exacto)return;
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  RUTA.pts.forEach(p=>{x0=Math.min(x0,p.x);x1=Math.max(x1,p.x);y0=Math.min(y0,p.y);y1=Math.max(y1,p.y);});
+  FONDO.cx=(x0+x1)/2;FONDO.cy=(y0+y1)/2;
+  if(FONDO.img&&!FONDO.exacto){
+    const ancho=Math.max(x1-x0,y1-y0)*1.5;              // la imagen cubre el trazado con holgura
+    FONDO.mpp=ancho/FONDO.img.width;FONDO.mppy=FONDO.mpp;
+  }
+}
+/* Punto del mundo (x,y en metros) → píxel de la imagen */
+function fondoUV(x,y){
+  if(!FONDO.img)return null;
+  const c=Math.cos(-FONDO.rot*D), s=Math.sin(-FONDO.rot*D);
+  const ax=x-FONDO.cx-FONDO.dx, ay=y-FONDO.cy-FONDO.dy;
+  const rx=ax*c-ay*s, ry=ax*s+ay*c;
+  return {u:FONDO.img.width/2+rx/FONDO.mpp, v:FONDO.img.height/2+ry/(FONDO.mppy||FONDO.mpp)};
+}
+function fondoXY(u,v){
+  const c=Math.cos(FONDO.rot*D), s=Math.sin(FONDO.rot*D);
+  const rx=(u-FONDO.img.width/2)*FONDO.mpp, ry=(v-FONDO.img.height/2)*(FONDO.mppy||FONDO.mpp);
+  return {x:FONDO.cx+FONDO.dx+rx*c-ry*s, y:FONDO.cy+FONDO.dy+rx*s+ry*c};
+}
+/* Dibuja un triángulo de la imagen con transformación afín (textura sobre el terreno) */
+function triTextura(ctx,img,s0,s1,s2,d0,d1,d2){
+  const den=s0.u*(s2.v-s1.v)-s1.u*s2.v+s2.u*s1.v+(s1.u-s2.u)*s0.v;
+  if(!den)return;
+  const a=-(s0.v*(d2.x-d1.x)-s1.v*d2.x+s2.v*d1.x+(s1.v-s2.v)*d0.x)/den;
+  const b=(s1.v*d2.y+s0.v*(d1.y-d2.y)-s2.v*d1.y+(s2.v-s1.v)*d0.y)/den;
+  const c=(s0.u*(d2.x-d1.x)-s1.u*d2.x+s2.u*d1.x+(s1.u-s2.u)*d0.x)/den;
+  const d=-(s1.u*d2.y+s0.u*(d1.y-d2.y)-s2.u*d1.y+(s2.u-s1.u)*d0.y)/den;
+  const e=(s0.u*(s2.v*d1.x-s1.v*d2.x)+s0.v*(s1.u*d2.x-s2.u*d1.x)+(s2.u*s1.v-s1.u*s2.v)*d0.x)/den;
+  const f=(s0.u*(s2.v*d1.y-s1.v*d2.y)+s0.v*(s1.u*d2.y-s2.u*d1.y)+(s2.u*s1.v-s1.u*s2.v)*d0.y)/den;
+  ctx.save();
+  ctx.beginPath();ctx.moveTo(d0.x,d0.y);ctx.lineTo(d1.x,d1.y);ctx.lineTo(d2.x,d2.y);ctx.closePath();ctx.clip();
+  ctx.transform(a,b,c,d,e,f);
+  ctx.drawImage(img,0,0);
+  ctx.restore();
+}
+/* Terreno texturizado en la vista 3D: malla adaptativa delante de la cámara */
+function terreno3D(ctx,W,H,P,s0,oscuro,yh){
+  if(!FONDO.img)return false;
+  const aerea=(V3.vista==='aerea'||V3.vista==='cenital');
+  const L=RUTA.len, filas=[], N=aerea?18:24, M=aerea?20:16, ancho=aerea?230:60;
+  for(let i=0;i<=N;i++){
+    const d=(aerea?(i/N)*520-120:Math.pow(i/N,2.1)*220);   // más resolución cerca de la cámara
+    const a=alongRoute(clamp(s0+d,0,L));
+    const nx=Math.sin(a.ang), ny=-Math.cos(a.ang);
+    const fila=[];
+    for(let j=0;j<=M;j++){
+      const t=(j/M-0.5)*2*ancho;
+      fila.push({x:a.x+nx*t,y:a.y+ny*t});
+    }
+    filas.push(fila);
+  }
+  ctx.save();
+  ctx.globalAlpha=FONDO.op;ctx.imageSmoothingQuality='high';
+  for(let i=filas.length-1;i>0;i--){
+    // cerca de la cámara la imagen cenital se ve estirada: se desvanece contra el terreno plano
+    if(!aerea){
+      const dFila=Math.pow((i-1)/N,2.1)*220;
+      ctx.globalAlpha=FONDO.op*clamp((dFila-10)/30,0,1);
+      if(ctx.globalAlpha<=0.01)continue;
+    }
+    for(let j=0;j<M;j++){
+      const A=filas[i][j],B=filas[i][j+1],C=filas[i-1][j+1],Dd=filas[i-1][j];
+      const pA=P(A),pB=P(B),pC=P(C),pD=P(Dd);
+      if(!pA||!pB||!pC||!pD)continue;
+      const uA=fondoUV(A.x,A.y),uB=fondoUV(B.x,B.y),uC=fondoUV(C.x,C.y),uD=fondoUV(Dd.x,Dd.y);
+      triTextura(ctx,FONDO.img,uA,uB,uC,pA,pB,pC);
+      triTextura(ctx,FONDO.img,uA,uC,uD,pA,pC,pD);
+    }
+  }
+  ctx.globalAlpha=1;
+  ctx.restore();
+  if(oscuro>0){ctx.fillStyle='rgba(6,10,16,'+oscuro+')';ctx.fillRect(0,yh||0,W,H-(yh||0));}   // la noche oscurece solo el terreno
+  return true;
+}
+$('#fondoFile').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const im=new Image();
+    im.onload=()=>{FONDO.img=im;FONDO.exacto=false;centrarFondo();
+      $('#fondoCtl').hidden=false;$('#foEsc').value=1;$('#foRot').value=0;$('#foDx').value=0;$('#foDy').value=0;
+      FONDO.base=FONDO.mpp;FONDO.mppy=FONDO.mpp;FONDO.dx=0;FONDO.dy=0;FONDO.dx0=0;FONDO.dy0=0;
+      $('#fondoEstado').textContent='imagen cargada · encuadrando…';
+      dirty=true;render();pintar3D(0.08);
+      setTimeout(()=>autoEncuadrar(false),60);};
+    im.src=r.result;
+  };
+  r.readAsDataURL(f);
+  e.target.value='';
+});
+/* ===== Encuadre automático: busca la vía dentro de la imagen y calza el trazado sobre ella =====
+   No necesita internet ni servicios externos: compara el brillo a lo largo del trazado contra el de
+   sus costados y busca la escala, el giro y el desplazamiento que mejor lo hacen coincidir con el camino. */
+let GRIS=null;
+function prepararGris(){
+  if(!FONDO.img)return null;
+  const c=document.createElement('canvas');
+  const esc=Math.min(1,1400/Math.max(FONDO.img.width,FONDO.img.height));
+  c.width=Math.round(FONDO.img.width*esc);c.height=Math.round(FONDO.img.height*esc);
+  const x=c.getContext('2d');x.drawImage(FONDO.img,0,0,c.width,c.height);
+  const d=x.getImageData(0,0,c.width,c.height).data;
+  const g=new Float32Array(c.width*c.height);
+  for(let i=0,j=0;i<d.length;i+=4,j++)g[j]=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114);
+  GRIS={g:g,w:c.width,h:c.height,esc:esc};
+  return GRIS;
+}
+function muestraRuta(n){                                   // puntos equiespaciados y sus normales
+  const R=[],Nn=[],L=RUTA.len;
+  for(let k=0;k<n;k++){
+    const a=alongRoute(L*k/(n-1));
+    R.push({x:a.x,y:a.y});
+    Nn.push({x:Math.sin(a.ang),y:-Math.cos(a.ang)});
+  }
+  return {R:R,N:Nn};
+}
+function puntuar(M,mpp,rot,tx,ty,off){
+  off=off||22;
+  const c=Math.cos(rot*D), sn=Math.sin(rot*D), g=GRIS, W2=g.w/2, H2=g.h/2, mp=mpp/g.esc;  // el buffer está reducido por g.esc
+  const leer=(X,Y)=>{
+    const x=X-tx, y=Y-ty;
+    const u=W2+(x*c+y*sn)/mp, v=H2+(-x*sn+y*c)/mp;
+    if(u<0||v<0||u>=g.w||v>=g.h)return -1;
+    return g.g[(v|0)*g.w+(u|0)];
+  };
+  let son=0,soff=0,n=0,fuera=0;
+  for(let i=0;i<M.R.length;i++){
+    const a=leer(M.R[i].x,M.R[i].y);
+    if(a<0){fuera++;continue;}
+    const b=leer(M.R[i].x+M.N[i].x*off,M.R[i].y+M.N[i].y*off);
+    const d2=leer(M.R[i].x-M.N[i].x*off,M.R[i].y-M.N[i].y*off);
+    if(b<0||d2<0){fuera++;continue;}
+    son+=a;soff+=(b+d2)/2;n++;
+  }
+  if(n<M.R.length*0.85)return -1e9;
+  return (son-soff)/n;
+}
+let CANDS=[],CANDI=0;
+function aplicarCand(c,etiqueta){
+  FONDO.exacto=false;FONDO.cx=0;FONDO.cy=0;
+  FONDO.mpp=c.mpp;FONDO.mppy=c.mpp;FONDO.rot=c.rot;
+  FONDO.dx=c.tx;FONDO.dy=c.ty;FONDO.base=c.mpp;FONDO.dx0=c.tx;FONDO.dy0=c.ty;
+  $('#foEsc').value=1;$('#foRot').value=c.rot.toFixed(1);$('#foDx').value=0;$('#foDy').value=0;
+  const cal=c.sc>35?'muy buena':(c.sc>18?'buena':'débil');
+  $('#fondoEstado').textContent=(etiqueta||'encuadre '+cal)+' · '+fmt(c.mpp,2)+' m/píxel · giro '+fmt(c.rot,1)+'°';
+  render();pintar3D(V3.anim?0:0.08);
+}
+/* Un trazado casi recto no fija la escala: sobre una calle recta cualquier tamaño encaja */
+function rectitud(){
+  const a=RUTA.pts[0], b=RUTA.pts[RUTA.pts.length-1];
+  return Math.hypot(b.x-a.x,b.y-a.y)/Math.max(1,RUTA.len);
+}
+async function autoEncuadrar(libre){
+  if(!FONDO.img){$('#fondoEstado').textContent='cargue primero una imagen';return;}
+  prepararGris();
+  const MG=muestraRuta(160), MM=muestraRuta(220), MF=muestraRuta(400);
+  const btn=$('#fondoAuto');btn.disabled=true;btn.textContent='Buscando la vía…';
+  const norteArriba=$('#norteArriba').checked && !libre;
+  const escalas=[0.7,0.9,1.1,1.4,1.7,2.1,2.6,3.2];
+  // Con el norte arriba el giro se limita: en una cuadrícula urbana, una calle perpendicular
+  // también encajaría sobre el trazado y la imagen saldría girada 90°.
+  const giros=[];
+  if(norteArriba){for(let r=-8;r<=8;r+=1)giros.push(r);}
+  else {for(let r=-180;r<180;r+=6)giros.push(r);}
+  const cubos={};
+  for(let gi=0;gi<giros.length;gi++){
+    const ri=giros[gi];
+    for(const mpp of escalas)
+      for(let tx=-600;tx<=600;tx+=60)
+        for(let ty=-600;ty<=600;ty+=60){
+          const sc=puntuar(MG,mpp,ri,tx,ty,22);
+          if(sc<=-1e8)continue;
+          // se conserva el mejor de cada zona, para ofrecer alternativas separadas entre sí
+          const k=Math.round(ri/30)+'|'+Math.round(tx/150)+'|'+Math.round(ty/150);
+          if(!cubos[k]||sc>cubos[k].sc)cubos[k]={sc:sc,mpp:mpp,rot:ri,tx:tx,ty:ty};
+        }
+    if(gi%3===0){btn.textContent='Buscando… '+Math.round((gi+1)/giros.length*100)+' %';await new Promise(r=>setTimeout(r,0));}
+  }
+  let cands=Object.values(cubos).sort((a,b)=>b.sc-a.sc).slice(0,8);
+  if(!cands.length){btn.disabled=false;btn.textContent='⌖ Encuadrar automáticamente';
+    $('#fondoEstado').textContent='no se pudo encuadrar: la imagen no cubre el trazado';return;}
+  const afinar=async(c0,M,off,vueltas,pM0,pT0,pR0)=>{
+    let m={sc:puntuar(M,c0.mpp,c0.rot,c0.tx,c0.ty,off),mpp:c0.mpp,rot:c0.rot,tx:c0.tx,ty:c0.ty};
+    for(let it=0;it<vueltas;it++){
+      const pm=m, pM=pm.mpp*pM0/(it+1), pT=pT0/(it+1), pR=pR0/(it+1);
+      for(let mpp=pm.mpp-pM*2;mpp<=pm.mpp+pM*2.01;mpp+=pM)
+        for(let rot=pm.rot-pR*2;rot<=pm.rot+pR*2.01;rot+=pR)
+          for(let tx=pm.tx-pT*2;tx<=pm.tx+pT*2.01;tx+=pT)
+            for(let ty=pm.ty-pT*2;ty<=pm.ty+pT*2.01;ty+=pT){
+              const sc=puntuar(M,mpp,rot,tx,ty,off);
+              if(sc>m.sc)m={sc:sc,mpp:mpp,rot:rot,tx:tx,ty:ty};
+            }
+      await new Promise(r=>setTimeout(r,0));
+    }
+    return m;
+  };
+  btn.textContent='Afinando…';
+  const lista=[];
+  const base=[];
+  cands.forEach(c=>{base.push(c);if(!norteArriba)base.push({sc:c.sc,mpp:c.mpp,rot:c.rot+180,tx:c.tx,ty:c.ty});});
+  for(let i=0;i<base.length;i++){
+    const r=await afinar(base[i],MM,14,2,0.14,40,norteArriba?1.5:4);
+    lista.push(r);
+    btn.textContent='Afinando… '+Math.round((i+1)/base.length*100)+' %';
+  }
+  lista.sort((a,b)=>b.sc-a.sc);
+  const fino=await afinar(lista[0],MF,12,3,0.05,18,norteArriba?0.8:1.2);
+  lista[0]=fino;
+  // se descartan encuadres casi idénticos para que las alternativas sean realmente distintas
+  CANDS=[];
+  lista.forEach(c=>{
+    c.rot=((c.rot+180)%360+360)%360-180;
+    if(!CANDS.some(o=>Math.abs(o.tx-c.tx)<80&&Math.abs(o.ty-c.ty)<80&&Math.abs(o.rot-c.rot)<6))CANDS.push(c);
+  });
+  CANDI=0;
+  btn.disabled=false;btn.textContent='⌖ Encuadrar automáticamente';
+  $('#fondoOtro').hidden=(CANDS.length<2);
+  // Si con el norte arriba el ajuste sale flojo, la captura probablemente está girada
+  if(norteArriba && CANDS[0].sc<18){
+    $('#fondoEstado').textContent='con el norte arriba no encaja: probando con giro libre…';
+    await new Promise(r=>setTimeout(r,30));
+    return autoEncuadrar(true);
+  }
+  aplicarCand(CANDS[0]);
+  const rc=rectitud();
+  if(rc>0.985){
+    $('#fondoEstado').textContent+=' · trazado recto: la escala no se puede deducir de la imagen, ajústela con “Alinear con 2 puntos”';
+  }
+}
+$('#fondoOtro').addEventListener('click',()=>{
+  if(CANDS.length<2)return;
+  CANDI=(CANDI+1)%CANDS.length;
+  aplicarCand(CANDS[CANDI],'opción '+(CANDI+1)+' de '+CANDS.length);
+});
+$('#fondoAuto').addEventListener('click',()=>autoEncuadrar(false));
+
+/* Alineación por dos puntos: el usuario señala en la imagen dónde están los extremos del trazado */
+function mundoDesdeClic(ev){
+  const r=cmap.getBoundingClientRect();
+  const sx=(ev.clientX-r.left), sy=(ev.clientY-r.top);
+  return {x:(sx-MAPT.ox)/MAPT.k, y:(sy-MAPT.oy)/MAPT.k};
+}
+function pedirAlineacion(){
+  if(!FONDO.img){$('#fondoEstado').textContent='cargue primero una imagen';return;}
+  alinear.activo=true;alinear.p1=null;
+  cmap.style.cursor='crosshair';
+  $('#fondoEstado').textContent='clic 1: dónde está el extremo sur (Troncal) en la imagen';
+}
+cmap.addEventListener('click',ev=>{
+  if(!alinear.activo)return;
+  const W=mundoDesdeClic(ev);
+  const uv=fondoUV(W.x,W.y);                       // píxel de la imagen señalado
+  if(!alinear.p1){
+    alinear.p1=uv;
+    $('#fondoEstado').textContent='clic 2: dónde está el extremo norte (Las Flores)';
+    return;
+  }
+  const p1=alinear.p1, p2=uv;
+  const A=RUTA.pts[0], B=RUTA.pts[RUTA.pts.length-1];
+  const dp=Math.hypot(p2.u-p1.u,p2.v-p1.v);
+  if(dp<10){$('#fondoEstado').textContent='los dos puntos quedaron muy juntos, intente de nuevo';alinear.p1=null;return;}
+  const s=Math.hypot(B.x-A.x,B.y-A.y)/dp;
+  // una captura con el norte arriba no debe girarse: basta escala y desplazamiento
+  const th=$('#norteArriba').checked?0:
+    (Math.atan2(B.y-A.y,B.x-A.x)-Math.atan2(p2.v-p1.v,p2.u-p1.u));
+  FONDO.mpp=s;FONDO.mppy=s;FONDO.rot=th*R2D;
+  const c=Math.cos(th),sn=Math.sin(th);
+  const anc=(u,v)=>{const rx=(u-FONDO.img.width/2)*s, ry=(v-FONDO.img.height/2)*s;
+    return {x:rx*c-ry*sn, y:rx*sn+ry*c};};
+  const q1=anc(p1.u,p1.v), q2=anc(p2.u,p2.v);
+  FONDO.cx=0;FONDO.cy=0;
+  FONDO.dx=((A.x-q1.x)+(B.x-q2.x))/2; FONDO.dy=((A.y-q1.y)+(B.y-q2.y))/2;
+  FONDO.base=FONDO.mpp;FONDO.dx0=FONDO.dx;FONDO.dy0=FONDO.dy;
+  $('#foEsc').value=1;$('#foRot').value=fmt(FONDO.rot,1).replace(',','.');$('#foDx').value=0;$('#foDy').value=0;
+  alinear.activo=false;alinear.p1=null;cmap.style.cursor='';
+  $('#fondoEstado').textContent='alineada · '+fmt(FONDO.mpp,2)+' m/píxel · giro '+fmt(FONDO.rot,1)+'°';
+  render();pintar3D(V3.anim?0:0.08);
+});
+$('#fondoAlinear').addEventListener('click',pedirAlineacion);
+$('#fondoOff').addEventListener('click',()=>{FONDO.img=null;alinear.activo=false;cmap.style.cursor='';
+  $('#fondoEstado').textContent='sin imagen';$('#fondoCtl').hidden=true;dirty=true;render();pintar3D(0.08);});
+['foEsc','foRot','foDx','foDy','foOp'].forEach(id=>$('#'+id).addEventListener('input',()=>{
+  if(!FONDO.img)return;
+  const kEsc=(+$('#foEsc').value);
+  const rel=(FONDO.mppy||FONDO.mpp)/(FONDO.mpp||1);
+  FONDO.mpp=(FONDO.base||FONDO.mpp)*kEsc;FONDO.mppy=FONDO.mpp*rel;
+  FONDO.rot=+$('#foRot').value;FONDO.op=+$('#foOp').value;
+  FONDO.dx=(FONDO.dx0||0)+(+$('#foDx').value);FONDO.dy=(FONDO.dy0||0)+(+$('#foDy').value);
+  render();pintar3D(V3.anim?0:0.08);
+}));
+
 /* ===================== Recorrido 3D y exportación de video ===================== */
 const V3={vista:'recorrido',momento:'atardecer',dur:20,res:720,t:0,anim:null,grabando:false};
 const c3=$('#c3d'), g3=c3.getContext('2d');
@@ -1626,6 +2343,10 @@ function camara3D(t){
   const L=RUTA.len, s=clamp(t,0,1)*L;
   const a=alongRoute(Math.min(s,L-1)), b=alongRoute(Math.min(s+30,L));
   const nx=Math.sin(a.ang), ny=-Math.cos(a.ang);          // perpendicular a la vía
+  if(V3.vista==='cenital'){
+    const ade=alongRoute(clamp(s+45,0,L));
+    return {p:{x:a.x,y:a.y,z:105}, o:{x:ade.x,y:ade.y,z:0}, fov:38};
+  }
   if(V3.vista==='aerea'){
     const atras=alongRoute(Math.max(0,s-110)), lejos=alongRoute(Math.min(L,s+170));
     return {p:{x:atras.x-nx*45,y:atras.y-ny*45,z:115},
@@ -1679,39 +2400,69 @@ function render3D(ctx,W,H,t){
       ctx.fillRect(sx,sy,1.4,1.4);
     }
   }
-  // Suelo: el terreno lejano se pinta hasta el horizonte
+  // Suelo: la captura georreferenciada si existe; si no, un terreno plano
   const hor=P({x:cam.o.x+(cam.o.x-cam.p.x)*400,y:cam.o.y+(cam.o.y-cam.p.y)*400,z:0});
   const yh=hor?clamp(hor.y,0,H):H*0.45;
   ctx.fillStyle=alt>0?'#5D6B4A':(alt>-8?'#1E2622':'#12181A');
   ctx.fillRect(0,yh,W,H-yh);
+  const oscuro = alt>6?0 : (alt>-1?0.22 : (alt>-8?0.48:0.62));
+  terreno3D(ctx,W,H,P,clamp(t,0,1)*RUTA.len,oscuro,yh);
 
   const L=RUTA.len, s0=clamp(t,0,1)*L, an=S.ancho/2;
-  const seg=[];                                             // tramos de calzada visibles
+  const central=(S.disp==='central'), sa=S.sepAncho/2, sh=S.sepAlto;
+  // bandas transversales: calzadas y, si existe, el andén central elevado
+  const bandas = central
+    ? [{y0:-(sa+S.ancho),y1:-sa,z:0,tipo:'via'},{y0:-sa,y1:sa,z:sh,tipo:'anden'},{y0:sa,y1:sa+S.ancho,z:0,tipo:'via'}]
+    : [{y0:-an,y1:an,z:0,tipo:'via'}];
+  const seg=[];                                             // tramos visibles
   const paso=6;
   for(let s=Math.max(0,s0-40);s<Math.min(L,s0+320);s+=paso){
     const a=alongRoute(s), b=alongRoute(Math.min(L,s+paso));
     const nax=Math.sin(a.ang), nay=-Math.cos(a.ang), nbx=Math.sin(b.ang), nby=-Math.cos(b.ang);
-    seg.push({d:s,q:[{x:a.x-nax*an,y:a.y-nay*an},{x:a.x+nax*an,y:a.y+nay*an},
-                     {x:b.x+nbx*an,y:b.y+nby*an},{x:b.x-nbx*an,y:b.y-nby*an}],a:a,b:b});
+    const q=(y,pt,nx2,ny2,z)=>({x:pt.x+nx2*y,y:pt.y+ny2*y,z:z||0});
+    bandas.forEach(bd=>{
+      seg.push({d:s,tipo:bd.tipo,z:bd.z,
+        q:[q(bd.y0,a,nax,nay,bd.z),q(bd.y1,a,nax,nay,bd.z),q(bd.y1,b,nbx,nby,bd.z),q(bd.y0,b,nbx,nby,bd.z)],
+        lados:bd.tipo==='anden'?[
+          [q(bd.y0,a,nax,nay,bd.z),q(bd.y0,a,nax,nay,0),q(bd.y0,b,nbx,nby,0),q(bd.y0,b,nbx,nby,bd.z)],
+          [q(bd.y1,a,nax,nay,bd.z),q(bd.y1,a,nax,nay,0),q(bd.y1,b,nbx,nby,0),q(bd.y1,b,nbx,nby,bd.z)]]:null,
+        a:a,b:b,ejeY:(bd.y0+bd.y1)/2,nax:nax,nay:nay});
+    });
   }
   seg.sort((A,B)=>B.d-A.d);
   seg.forEach(sg=>{
     const p=sg.q.map(P);if(p.some(q=>!q))return;
     const lej=clamp(1-(sg.d-s0)/320,0.25,1);
-    ctx.fillStyle=alt>0?'rgba(74,78,82,'+lej+')':'rgba(30,35,40,'+lej+')';
+    if(sg.tipo==='anden'){
+      // bordillo del andén
+      (sg.lados||[]).forEach(l=>{
+        const pl=l.map(P);if(pl.some(q=>!q))return;
+        ctx.fillStyle=alt>0?'rgba(150,148,140,'+lej+')':'rgba(58,62,66,'+lej+')';
+        ctx.beginPath();ctx.moveTo(pl[0].x,pl[0].y);for(let i=1;i<4;i++)ctx.lineTo(pl[i].x,pl[i].y);ctx.closePath();ctx.fill();
+      });
+      ctx.fillStyle=alt>0?'rgba(120,132,96,'+lej+')':'rgba(38,46,42,'+lej+')';   // zona verde del separador
+    } else {
+      ctx.fillStyle=alt>0?'rgba(74,78,82,'+lej+')':'rgba(30,35,40,'+lej+')';
+    }
     ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);for(let i=1;i<4;i++)ctx.lineTo(p[i].x,p[i].y);ctx.closePath();ctx.fill();
-    // berma
-    ctx.strokeStyle=alt>0?'rgba(230,225,205,'+(0.5*lej)+')':'rgba(205,212,208,'+(0.2*lej)+')';
-    ctx.lineWidth=clamp(0.14*(p[0].esc||0),1,W*0.006);
-    ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);ctx.lineTo(p[3].x,p[3].y);ctx.moveTo(p[1].x,p[1].y);ctx.lineTo(p[2].x,p[2].y);ctx.stroke();
+    if(sg.tipo==='via'){                                     // línea de borde
+      ctx.strokeStyle=alt>0?'rgba(230,225,205,'+(0.5*lej)+')':'rgba(205,212,208,'+(0.2*lej)+')';
+      ctx.lineWidth=clamp(0.14*(p[0].esc||0),1,W*0.006);
+      ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);ctx.lineTo(p[3].x,p[3].y);ctx.moveTo(p[1].x,p[1].y);ctx.lineTo(p[2].x,p[2].y);ctx.stroke();
+    }
   });
-  // Línea central discontinua
+  // Líneas discontinuas: eje de la vía, o eje de cada calzada cuando hay separador
+  const ejes = central ? [-(sa+S.ancho/2), sa+S.ancho/2] : [0];
   for(let s=Math.max(0,Math.floor(s0/12)*12);s<Math.min(L,s0+300);s+=12){
     const a=alongRoute(s),b=alongRoute(Math.min(L,s+5));
-    const p1=P(a),p2=P(b);if(!p1||!p2)continue;
-    ctx.strokeStyle=alt>0?'rgba(245,240,215,.85)':'rgba(235,238,230,.5)';
-    ctx.lineWidth=Math.max(1,26/p1.z);
-    ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+    const nx1=Math.sin(a.ang),ny1=-Math.cos(a.ang),nx2=Math.sin(b.ang),ny2=-Math.cos(b.ang);
+    ejes.forEach(ey=>{
+      const p1=P({x:a.x+nx1*ey,y:a.y+ny1*ey}),p2=P({x:b.x+nx2*ey,y:b.y+ny2*ey});
+      if(!p1||!p2)return;
+      ctx.strokeStyle=alt>0?'rgba(245,240,215,.85)':'rgba(235,238,230,.5)';
+      ctx.lineWidth=Math.max(1,26/p1.z);
+      ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+    });
   }
   // Postes con su luminaria y su charco de luz
   const dim=(V3.momento==='noche')?dimFactor(2):1;
@@ -1723,13 +2474,24 @@ function render3D(ctx,W,H,t){
     const nx=Math.sin(a.ang), ny=-Math.cos(a.ang);
     const lado=(S.disp==='tres'&&i%2)?-1:1;
     const dx=(an+0.6-S.avance);
-    postes.push({s:s,base:{x:a.x+nx*dx*lado,y:a.y+ny*dx*lado,z:0},
-                 lampara:{x:a.x+nx*(dx-1.4)*lado,y:a.y+ny*(dx-1.4)*lado,z:S.alt},
-                 luz:{x:a.x+nx*(dx-2.2)*lado,y:a.y+ny*(dx-2.2)*lado,z:0},d:Math.abs(s-s0)});
-    if(S.disp==='par'){
-      postes.push({s:s,base:{x:a.x-nx*dx,y:a.y-ny*dx,z:0},
-                   lampara:{x:a.x-nx*(dx-1.4),y:a.y-ny*(dx-1.4),z:S.alt},
-                   luz:{x:a.x-nx*(dx-2.2),y:a.y-ny*(dx-2.2),z:0},d:Math.abs(s-s0)});
+    if(S.disp==='central'){
+      const b=S.sepAncho/2+S.avance;                         // poste en el separador, un brazo a cada calzada
+      const zb=S.sepAlto;
+      postes.push({s:s,ang:a.ang,base:{x:a.x,y:a.y,z:zb},
+                   lampara:{x:a.x+nx*b,y:a.y+ny*b,z:zb+S.alt},
+                   luz:{x:a.x+nx*(b+1.2),y:a.y+ny*(b+1.2),z:0},d:Math.abs(s-s0)});
+      postes.push({s:s,ang:a.ang,base:{x:a.x,y:a.y,z:zb},sinMastil:true,
+                   lampara:{x:a.x-nx*b,y:a.y-ny*b,z:zb+S.alt},
+                   luz:{x:a.x-nx*(b+1.2),y:a.y-ny*(b+1.2),z:0},d:Math.abs(s-s0)});
+    } else {
+      postes.push({s:s,ang:a.ang,base:{x:a.x+nx*dx*lado,y:a.y+ny*dx*lado,z:0},
+                   lampara:{x:a.x+nx*(dx-1.4)*lado,y:a.y+ny*(dx-1.4)*lado,z:S.alt},
+                   luz:{x:a.x+nx*(dx-2.2)*lado,y:a.y+ny*(dx-2.2)*lado,z:0},d:Math.abs(s-s0)});
+      if(S.disp==='par'){
+        postes.push({s:s,ang:a.ang,base:{x:a.x-nx*dx,y:a.y-ny*dx,z:0},
+                     lampara:{x:a.x-nx*(dx-1.4),y:a.y-ny*(dx-1.4),z:S.alt},
+                     luz:{x:a.x-nx*(dx-2.2),y:a.y-ny*(dx-2.2),z:0},d:Math.abs(s-s0)});
+      }
     }
   }
   postes.sort((A,B)=>B.d-A.d);
@@ -1763,14 +2525,38 @@ function render3D(ctx,W,H,t){
     if(pb.z<10)return;                                    // el poste pegado a la cámara taparía la escena
     ctx.strokeStyle=encendidas?'rgba(206,216,220,.9)':'rgba(150,162,166,.85)';
     ctx.lineWidth=clamp(0.20*pb.esc,1.2,W*0.012);
-    ctx.beginPath();ctx.moveTo(pb.x,pb.y);ctx.lineTo(pl.x,pl.y);ctx.stroke();
-    const pt=P({x:po.lampara.x,y:po.lampara.y,z:S.alt+0.4});
-    if(pt){ctx.lineWidth=clamp(0.12*pb.esc,1,W*0.008);
-      ctx.beginPath();ctx.moveTo(pl.x,pl.y);ctx.lineTo(pt.x,pt.y);ctx.stroke();}
-    // Luminaria
+    if(!po.sinMastil){                                     // en el poste central el mástil se dibuja una sola vez
+      const cima=P({x:po.base.x,y:po.base.y,z:po.lampara.z});
+      if(cima){ctx.beginPath();ctx.moveTo(pb.x,pb.y);ctx.lineTo(cima.x,cima.y);ctx.stroke();
+        ctx.lineWidth=clamp(0.12*pb.esc,1,W*0.008);
+        ctx.beginPath();ctx.moveTo(cima.x,cima.y);ctx.lineTo(pl.x,pl.y);ctx.stroke();}
+    } else {
+      const cima=P({x:po.base.x,y:po.base.y,z:po.lampara.z});
+      if(cima){ctx.lineWidth=clamp(0.12*pb.esc,1,W*0.008);
+        ctx.beginPath();ctx.moveTo(cima.x,cima.y);ctx.lineTo(pl.x,pl.y);ctx.stroke();}
+    }
+    // Luminaria: caja rectangular como la real, orientada con la vía
     const rl=clamp(0.55*pl.esc,2,W*0.02);
-    ctx.fillStyle=encendidas?'#FFF3C8':'#8A959A';
-    ctx.beginPath();ctx.ellipse(pl.x,pl.y,rl*1.7,rl*0.7,0,0,6.2832);ctx.fill();
+    // el cuerpo va perpendicular a la vía: su lado largo cruza la calzada, como se monta en obra
+    const d1=(IES&&IES.lar>0.15?IES.lar:0.30), d2=(IES&&IES.anc>0.15?IES.anc:0.66);
+    const Lb=Math.min(d1,d2), Ab=Math.max(d1,d2), Hb=0.13;
+    const ux=Math.cos(po.ang), uy=Math.sin(po.ang), vx=Math.sin(po.ang), vy=-Math.cos(po.ang);
+    const cj=(sx,sy,sz)=>P({x:po.lampara.x+ux*Lb/2*sx+vx*Ab/2*sy, y:po.lampara.y+uy*Lb/2*sx+vy*Ab/2*sy, z:po.lampara.z+Hb/2*sz});
+    const V=[cj(-1,-1,1),cj(1,-1,1),cj(1,1,1),cj(-1,1,1),cj(-1,-1,-1),cj(1,-1,-1),cj(1,1,-1),cj(-1,1,-1)];
+    if(V.every(q=>q)){
+      const cara=(idx,color)=>{ctx.fillStyle=color;ctx.beginPath();
+        ctx.moveTo(V[idx[0]].x,V[idx[0]].y);for(let i=1;i<4;i++)ctx.lineTo(V[idx[i]].x,V[idx[i]].y);
+        ctx.closePath();ctx.fill();};
+      cara([0,1,2,3],encendidas?'#6E7276':'#585E62');          // tapa superior
+      cara([1,5,6,2],encendidas?'#8A9094':'#6C7276');          // costado
+      cara([3,2,6,7],encendidas?'#7D8286':'#63696D');          // costado
+      cara([4,5,6,7],encendidas?'#FFF6D2':'#9AA4A8');          // refractor
+      ctx.strokeStyle='rgba(20,26,30,.55)';ctx.lineWidth=Math.max(.6,rl*0.12);
+      ctx.beginPath();ctx.moveTo(V[4].x,V[4].y);for(let i=5;i<8;i++)ctx.lineTo(V[i].x,V[i].y);ctx.closePath();ctx.stroke();
+    } else {
+      ctx.fillStyle=encendidas?'#FFF3C8':'#8A959A';
+      ctx.beginPath();ctx.ellipse(pl.x,pl.y,rl*1.7,rl*0.7,0,0,6.2832);ctx.fill();
+    }
     if(encendidas){
       const gl=ctx.createRadialGradient(pl.x,pl.y,1,pl.x,pl.y,rl*9);
       gl.addColorStop(0,'rgba(255,240,190,'+(0.75*dim)+')');gl.addColorStop(1,'rgba(255,220,140,0)');
@@ -1893,13 +2679,39 @@ const PRECIOS={
   acometida:1200000,
   cond:{'6':3500,'4':5000,'2':7500,'1/0':11000,'2/0':13500,'4/0':19000},
   trafo:{5:5200000,10:6500000,15:8000000,25:10500000,37.5:13000000,50:15500000,75:19000000},
-  transportePct:4, disenoPct:3, aiuPct:27, ivaPct:19
+  transportePct:4, disenoPct:3, aiuPct:27, ivaPct:19,
+  /* Cargas de ley de un contrato de obra pública. Porcentajes de referencia: dependen de la
+     ordenanza departamental y del acuerdo municipal, y deben confirmarse con la entidad. */
+  contribucionPct:5, estampillasPct:4, icaPct:0.7
 };
-const POSTES={'8-510':{n:'Poste de concreto 8 m · 510 kgf',p:430000},'9-510':{n:'Poste de concreto 9 m · 510 kgf',p:520000},
-  '10-510':{n:'Poste de concreto 10 m · 510 kgf',p:640000},'12-750':{n:'Poste de concreto 12 m · 750 kgf',p:1150000},
-  'metal':{n:'Poste metálico cónico 8 m',p:1960000}};
-const PRE={trafo:'auto',cond:'auto',spt:1,poste:'9-510'};
-function precioLuminaria(){ return PRECIOS.lumFijo || Math.round((250000+3000*S.pot)/1000)*1000; }  // referencia de mercado por potencia
+/* Postes de uso corriente en alumbrado público en Colombia. h = altura total; libre = altura útil
+   descontando el empotramiento usual (10 % de la altura + 0,50 m). Precios de referencia, editables. */
+const POSTES={
+  'c8-510':{n:'Poste de concreto pretensado 8 m · 510 kgf',p:430000,h:8},
+  'c8-750':{n:'Poste de concreto pretensado 8 m · 750 kgf',p:520000,h:8},
+  'c9-510':{n:'Poste de concreto pretensado 9 m · 510 kgf',p:520000,h:9},
+  'c10-510':{n:'Poste de concreto pretensado 10 m · 510 kgf',p:640000,h:10},
+  'c10-750':{n:'Poste de concreto pretensado 10 m · 750 kgf',p:760000,h:10},
+  'c10-1050':{n:'Poste de concreto pretensado 10 m · 1.050 kgf',p:980000,h:10},
+  'c12-750':{n:'Poste de concreto pretensado 12 m · 750 kgf',p:1150000,h:12},
+  'c12-1050':{n:'Poste de concreto pretensado 12 m · 1.050 kgf',p:1420000,h:12},
+  'c14-1050':{n:'Poste de concreto pretensado 14 m · 1.050 kgf',p:1850000,h:14},
+  'm6':{n:'Poste metálico troncocónico galvanizado 6 m',p:1250000,h:6},
+  'm8':{n:'Poste metálico cónico galvanizado 8 m',p:1960000,h:8},
+  'm10':{n:'Poste metálico cónico galvanizado 10 m',p:2450000,h:10},
+  'm12':{n:'Poste metálico cónico galvanizado 12 m',p:3100000,h:12},
+  'mo12':{n:'Poste metálico ornamental con brazo 12 m',p:3800000,h:12},
+  'f8':{n:'Poste de fibra de vidrio 8 m',p:1550000,h:8},
+  'f10':{n:'Poste de fibra de vidrio 10 m',p:1980000,h:10},
+  'w8':{n:'Poste de madera inmunizada 8 m',p:520000,h:8},
+  'w10':{n:'Poste de madera inmunizada 10 m',p:690000,h:10}};
+function alturaLibre(h){return Math.round((h-(0.1*h+0.5))*2)/2;}
+const PRE={trafo:'auto',cond:'auto',spt:1,poste:'c9-510',publico:false};
+/* Referencia de mercado por potencia, con sobreprecio por eficacia: un cuerpo LED
+   de 150 o 160 lm/W cuesta más que uno de 120 lm/W de la misma potencia. El precio
+   escrito a mano en la tabla (PRECIOS.lumFijo) manda sobre esta estimación. */
+function factorEficacia(){ return S.efic>120 ? 1+(S.efic-120)*0.0055 : 1; }
+function precioLuminaria(){ return PRECIOS.lumFijo || Math.round((250000+3000*S.pot)*factorEficacia()/1000)*1000; }
 /* Caída de tensión con carga uniformemente distribuida: longitud equivalente = L/2 */
 function caida(cond,potW,largo){
   const R=CONDUCTORES.find(c=>c.c===cond).R;
@@ -1955,7 +2767,7 @@ function presupuesto(){
   const add=(cap,n,cant,un,vu,key)=>it.push({cap:cap,n:n,cant:cant,un:un,vu:vu,key:key,total:cant*vu});
   add('Suministros',POSTES[PRE.poste].n,np,'un',PRECIOS.poste,'poste');
   add('Suministros','Brazo galvanizado y herrajes de fijación',nl,'un',PRECIOS.brazo,'brazo');
-  add('Suministros','Luminaria LED vial '+S.pot+' W, certificada RETILAP',nl,'un',precioLuminaria(),'lum');
+  add('Suministros','Luminaria LED vial '+S.pot+' W · '+S.efic+' lm/W, certificada RETILAP',nl,'un',precioLuminaria(),'lum');
   add('Suministros','Kit de puesta a tierra RETIE (varilla Cu 5/8"×2,4 m, conector y conductor)',nspt,'un',PRECIOS.spt,'spt');
   add('Suministros','Conductor de aluminio 2×'+ci.cond+' AWG aislado',Math.round(lc),'m',PRECIOS.cond[ci.cond],'cond_'+ci.cond);
   add('Suministros','Tablero de mando: fotocelda, contactor y protecciones',1,'un',PRECIOS.tablero,'tablero');
@@ -1983,8 +2795,17 @@ function presupuesto(){
   const aiu=Math.round(directo*PRECIOS.aiuPct/100);
   const util=Math.round(directo*0.12);                          // utilidad dentro del AIU, base del IVA
   const iva=Math.round((sumin+util)*PRECIOS.ivaPct/100);
-  const bruto=directo+aiu+iva;
-  return {items:it,sumin:sumin,montaje:montaje,directo:directo,aiu:aiu,iva:iva,bruto:bruto,ci:ci,np:np,nl:nl,lc:lc,nspt:nspt};
+  let cargas=[],totalCargas=0;
+  if(PRE.publico){                                              // contrato de obra pública
+    const base=directo+aiu;
+    const agr=(n,pct,key)=>{const v=Math.round(base*pct/100);cargas.push({n:n,pct:pct,key:key,total:v});totalCargas+=v;};
+    agr('Contribución especial de obra pública (Ley 418)',PRECIOS.contribucionPct,'contribucionPct');
+    agr('Estampillas departamentales y municipales',PRECIOS.estampillasPct,'estampillasPct');
+    agr('Industria y comercio (ICA) del municipio',PRECIOS.icaPct,'icaPct');
+  }
+  const bruto=directo+aiu+iva+totalCargas;
+  return {items:it,sumin:sumin,montaje:montaje,directo:directo,aiu:aiu,iva:iva,cargas:cargas,
+          totalCargas:totalCargas,bruto:bruto,ci:ci,np:np,nl:nl,lc:lc,nspt:nspt};
 }
 function pintarPresupuesto(){
   const P=presupuesto(),ci=P.ci;
@@ -2020,6 +2841,13 @@ function pintarPresupuesto(){
   trI.innerHTML='<td colspan="2">IVA sobre suministros y utilidad</td>'+
     '<td class="n"><input type="number" min="0" max="25" step="1" value="'+PRECIOS.ivaPct+'" data-p="ivaPct" aria-label="IVA"> %</td>'+
     '<td class="n">'+money(P.iva)+'</td>';tb.appendChild(trI);
+  P.cargas.forEach(cg=>{
+    const tr=document.createElement('tr');tr.className='tot';
+    tr.innerHTML='<td colspan="2">'+cg.n+'</td>'+
+      '<td class="n"><input type="number" min="0" max="20" step="0.1" value="'+cg.pct+'" data-p="'+cg.key+'" aria-label="Porcentaje"> %</td>'+
+      '<td class="n">'+money(cg.total)+'</td>';
+    tb.appendChild(tr);
+  });
   fila('COSTO BRUTO DEL PROYECTO',P.bruto,'bruto');
   tb.querySelectorAll('input[data-k]').forEach(inp=>inp.addEventListener('change',()=>{
     const k=inp.dataset.k,v=Math.max(0,+inp.value||0);
@@ -2033,6 +2861,9 @@ function pintarPresupuesto(){
   tb.querySelectorAll('input[data-p]').forEach(inp=>inp.addEventListener('change',()=>{
     PRECIOS[inp.dataset.p]=Math.max(0,+inp.value||0);guardarPrecios();pintarPresupuesto();
   }));
+  $('#notaPublico').textContent=PRE.publico?
+    ('Proyecto público: se suman contribución especial de obra pública, estampillas e ICA sobre el costo directo más AIU. '+
+     'Los porcentajes dependen de la ordenanza del departamento y del acuerdo del municipio; confírmelos con la entidad contratante. '):'';
   const km=RUTA.len/1000;
   $('#kpiKm').textContent=money(P.bruto/Math.max(km,.01));
   $('#kpiLum').textContent=money(P.bruto/Math.max(P.nl,1));
@@ -2050,7 +2881,13 @@ function cargarPrecios(){
   $('#selCond').value=PRE.cond;$('#selSpt').value=String(PRE.spt);$('#selPoste').value=PRE.poste;
   PRECIOS.poste=POSTES[PRE.poste].p;
   document.querySelectorAll('#segTrafo button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===PRE.trafo)));
+  document.querySelectorAll('#segNat button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.v==='publico')===!!PRE.publico)));
 }
+document.querySelectorAll('#segNat button').forEach(b=>b.addEventListener('click',()=>{
+  PRE.publico=(b.dataset.v==='publico');
+  document.querySelectorAll('#segNat button').forEach(o=>o.setAttribute('aria-pressed',String(o===b)));
+  guardarPrecios();pintarPresupuesto();
+}));
 document.querySelectorAll('#segTrafo button').forEach(b=>b.addEventListener('click',()=>{
   PRE.trafo=b.dataset.v;
   document.querySelectorAll('#segTrafo button').forEach(o=>o.setAttribute('aria-pressed',String(o===b)));
@@ -2058,7 +2895,12 @@ document.querySelectorAll('#segTrafo button').forEach(b=>b.addEventListener('cli
 }));
 $('#selCond').addEventListener('change',e=>{PRE.cond=e.target.value;guardarPrecios();pintarPresupuesto();});
 $('#selSpt').addEventListener('change',e=>{PRE.spt=+e.target.value;guardarPrecios();pintarPresupuesto();});
-$('#selPoste').addEventListener('change',e=>{PRE.poste=e.target.value;PRECIOS.poste=POSTES[PRE.poste].p;guardarPrecios();pintarPresupuesto();});
+$('#selPoste').addEventListener('change',e=>{
+  PRE.poste=e.target.value;PRECIOS.poste=POSTES[PRE.poste].p;
+  const hl=alturaLibre(POSTES[PRE.poste].h);              // altura útil descontando el empotramiento
+  S.alt=clamp(hl,6,14);$('#alt').value=S.alt;$('#altV').textContent=fmt(S.alt,1)+' m';
+  guardarPrecios();dirty=true;render();
+});
 
 /* ===================== Carga de trazados KML / KMZ ===================== */
 const RUTA_ORIG={pts:RUTA.pts.slice(),acc:RUTA.acc.slice(),len:RUTA.len,m:RUTA_M,
@@ -2067,7 +2909,7 @@ function rutaInfo(txt,error){
   const e=$('#rutaInfo');e.textContent=txt;e.style.color=error?'var(--gold)':'';
 }
 /* Descomprime el doc.kml de un KMZ leyendo el ZIP a mano (sin librerías) */
-async function leerKMZ(file){
+async function leerKMZ(file,quiereArchivos){
   const buf=new Uint8Array(await file.arrayBuffer()),dv=new DataView(buf.buffer);
   let eocd=-1;
   for(let i=buf.length-22;i>=Math.max(0,buf.length-66000);i--){ if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;} }
@@ -2085,19 +2927,41 @@ async function leerKMZ(file){
   if(!elegido)throw new Error('el KMZ no contiene ningún archivo .kml');
   const lnl=dv.getUint16(elegido.lho+26,true),lel=dv.getUint16(elegido.lho+28,true);
   const ini=elegido.lho+30+lnl+lel, datos=buf.subarray(ini,ini+elegido.csize);
-  if(elegido.met===0)return new TextDecoder().decode(datos);
-  if(typeof DecompressionStream==='undefined')
-    throw new Error('este navegador no puede descomprimir el KMZ; abra el KML directamente');
-  const ds=new DecompressionStream('deflate-raw');
-  const salida=new Blob([datos]).stream().pipeThrough(ds);
-  return await new Response(salida).text();
+  const desinflar=async(bytes,met)=>{
+    if(met===0)return bytes;
+    if(typeof DecompressionStream==='undefined')
+      throw new Error('este navegador no puede descomprimir el KMZ; abra el KML directamente');
+    const ds=new DecompressionStream('deflate-raw');
+    const out=new Blob([bytes]).stream().pipeThrough(ds);
+    return new Uint8Array(await new Response(out).arrayBuffer());
+  };
+  const kmlTxt=new TextDecoder().decode(await desinflar(datos,elegido.met));
+  if(!quiereArchivos)return kmlTxt;
+  // segunda pasada: se extraen las imágenes que trae el KMZ
+  const imgs={};
+  off=dv.getUint32(eocd+16,true);
+  for(let k=0;k<nEnt;k++){
+    if(dv.getUint32(off,true)!==0x02014b50)break;
+    const met=dv.getUint16(off+10,true),csize=dv.getUint32(off+20,true);
+    const nl=dv.getUint16(off+28,true),el=dv.getUint16(off+30,true),cl=dv.getUint16(off+32,true);
+    const lho=dv.getUint32(off+42,true);
+    const nom=new TextDecoder().decode(buf.subarray(off+46,off+46+nl));
+    if(/\.(png|jpg|jpeg|gif)$/i.test(nom)){
+      const l1=dv.getUint16(lho+26,true),l2=dv.getUint16(lho+28,true);
+      const ini2=lho+30+l1+l2;
+      imgs[nom.toLowerCase()]=await desinflar(buf.subarray(ini2,ini2+csize),met);
+    }
+    off+=46+nl+el+cl;
+  }
+  return {kml:kmlTxt,imgs:imgs};
 }
 /* Extrae la línea más larga y los puntos con nombre de un KML */
 function parsearKML(texto){
   const doc=new DOMParser().parseFromString(texto,'application/xml');
   if(doc.getElementsByTagName('parsererror').length)throw new Error('el archivo no es un KML válido');
   const coords=t=>t.trim().split(/\s+/).map(par=>{
-      const p=par.split(',');return {lon:parseFloat(p[0]),lat:parseFloat(p[1])};
+      const p=par.split(',');
+      return {lon:parseFloat(p[0]),lat:parseFloat(p[1]),alt:p.length>2?parseFloat(p[2]):0};
     }).filter(p=>isFinite(p.lat)&&isFinite(p.lon));
   const nombreDe=nodo=>{
     let n=nodo;
@@ -2138,6 +3002,9 @@ const distGeo=(a,b)=>{                                   // metros entre dos coo
   return Math.hypot((b.lon-a.lon)*111320*Math.cos(la),(b.lat-a.lat)*110540);
 };
 function aplicarRuta(geo,nombre,puntos,fuente){
+  const cotas=geo.map(p=>p.alt||0).filter(a=>isFinite(a));
+  const amin=Math.min.apply(null,cotas), amax=Math.max.apply(null,cotas);
+  RUTA_ALT=(amax-amin>2)?{min:amin,max:amax,desnivel:amax-amin}:null;
   if(geo.length>400){                                    // se conserva la forma, con menos vértices
     const paso=Math.ceil(geo.length/300),red=[];
     for(let i=0;i<geo.length;i+=paso)red.push(geo[i]);
@@ -2151,6 +3018,8 @@ function aplicarRuta(geo,nombre,puntos,fuente){
   const len=acc[acc.length-1];
   if(!(len>50))throw new Error('la ruta del archivo mide menos de 50 m');
   RUTA={pts:pts,acc:acc,len:len}; RUTA_M=+len.toFixed(2);
+  RUTA_ORIGEN={lat0:lat0,lon0:lon0};
+  CARGADO=true;
   SITE.lat=lat0; SITE.lon=lon0;
   RUTA_NOMBRE=nombre||'Trazado cargado desde archivo';
   RUTA_FUENTE=fuente||'archivo KML/KMZ del usuario';
@@ -2165,41 +3034,166 @@ function aplicarRuta(geo,nombre,puntos,fuente){
   });
   if(!hs.length){hs.push({i:0,l:'Inicio'});hs.push({i:pts.length-1,l:'Fin'});}
   HITOS=hs.slice(0,6);
+  centrarFondo();
   $('#rutaNom').textContent='Trazado · '+RUTA_NOMBRE;
   $('#pieMapa').textContent='Planta esquemática sobre '+RUTA_FUENTE;
   $('#chipRoute').textContent=RUTA_NOMBRE.slice(0,34)+' · '+RUTA_M.toLocaleString('es-CO')+' m';
   rutaInfo(Math.round(RUTA_M).toLocaleString('es-CO')+' m · '+pts.length+' vértices · '+fuente);
   dirty=true; render();
 }
+/* Superposición de imagen del KML: <GroundOverlay> con su LatLonBox */
+function overlayDeKML(texto,imgs){
+  const doc=new DOMParser().parseFromString(texto,'application/xml');
+  const go=doc.getElementsByTagNameNS('*','GroundOverlay')[0];
+  if(!go)return null;
+  const val=t=>{const n=go.getElementsByTagNameNS('*',t)[0];return n?parseFloat(n.textContent):NaN;};
+  const box={n:val('north'),s:val('south'),e:val('east'),w:val('west'),rot:val('rotation')||0};
+  if(!isFinite(box.n)||!isFinite(box.s)||!isFinite(box.e)||!isFinite(box.w))return null;
+  const icon=go.getElementsByTagNameNS('*','href')[0];
+  if(!icon)return null;
+  const href=icon.textContent.trim().replace(/^\.\//,'');
+  let datos=null;
+  if(imgs){
+    const k=Object.keys(imgs).find(n=>n===href.toLowerCase()||n.endsWith('/'+href.toLowerCase())||href.toLowerCase().endsWith(n));
+    if(k)datos=imgs[k];
+  }
+  return {box:box,href:href,datos:datos};
+}
+function aplicarOverlay(ov,img){
+  const {lat0,lon0}=RUTA_ORIGEN;
+  const mx=111320*Math.cos(lat0*D), my=110540;
+  const xw=(ov.box.w-lon0)*mx, xe=(ov.box.e-lon0)*mx;
+  const yn=-(ov.box.n-lat0)*my, ys=-(ov.box.s-lat0)*my;      // y crece hacia el sur
+  FONDO.img=img;FONDO.exacto=true;
+  FONDO.mpp=(xe-xw)/img.width;
+  FONDO.mppy=(ys-yn)/img.height;                            // el overlay estira la imagen a la caja en ambos ejes
+  FONDO.rot=-(ov.box.rot||0);
+  FONDO.cx=0;FONDO.cy=0;
+  FONDO.dx=(xw+xe)/2;FONDO.dy=(yn+ys)/2;
+  FONDO.base=FONDO.mpp;
+  $('#fondoCtl').hidden=false;$('#foEsc').value=1;$('#foRot').value=FONDO.rot;
+  $('#foDx').value=0;$('#foDy').value=0;FONDO.dx0=FONDO.dx;FONDO.dy0=FONDO.dy;
+  $('#fondoEstado').textContent='imagen georreferenciada del KMZ';
+}
 $('#kmlFile').addEventListener('change',async e=>{
   const f=e.target.files&&e.target.files[0];if(!f)return;
   rutaInfo('leyendo '+f.name+'…');
   try{
-    const texto = /\.kmz$/i.test(f.name) ? await leerKMZ(f) : await f.text();
-    const {lineas,puntos}=parsearKML(texto);
+    let texto, imgs=null;
+    if(/\.kmz$/i.test(f.name)){
+      const r=await leerKMZ(f,true);
+      if(typeof r==='string')texto=r; else {texto=r.kml;imgs=r.imgs;}
+    } else texto=await f.text();
+    const ov=overlayDeKML(texto,imgs);
+    if(ov&&ov.datos){
+      const im=new Image();
+      im.onload=()=>{aplicarOverlay(ov,im);dirty=true;render();pintar3D(0.08);};
+      im.src=URL.createObjectURL(new Blob([ov.datos]));
+    } else if(ov&&!ov.datos){
+      $('#fondoEstado').textContent='el KMZ declara una imagen ('+ov.href+') que no viene dentro del archivo';
+    }
+    let lineas=[],puntos=[];
+    try{ const r=parsearKML(texto); lineas=r.lineas; puntos=r.puntos; }
+    catch(err){
+      if(ov){                                        // archivo de solo imagen: se conserva el trazado vigente
+        rutaInfo('imagen georreferenciada cargada · se conserva el trazado actual');
+        e.target.value='';return;
+      }
+      throw err;
+    }
     let mejor=lineas[0],lmax=0;                          // se toma la línea más larga del archivo
     lineas.forEach(L=>{let d=0;for(let i=1;i<L.pts.length;i++)d+=distGeo(L.pts[i-1],L.pts[i]);
       if(d>lmax){lmax=d;mejor=L;}});
     aplicarRuta(mejor.pts,mejor.nombre||f.name.replace(/\.(kml|kmz)$/i,''),puntos,f.name);
+    if(!ov)$('#fondoEstado').textContent='el KMZ no trae imagen: expórtela como superposición para georreferenciarla';
   }catch(err){
     rutaInfo('No se pudo cargar: '+((err&&err.message)||'archivo no reconocido'),true);
   }
   e.target.value='';
 });
 $('#kmlReset').addEventListener('click',()=>{
+  CARGADO=false;RUTA_ALT=null;
   RUTA={pts:RUTA_ORIG.pts.slice(),acc:RUTA_ORIG.acc.slice(),len:RUTA_ORIG.len};
   RUTA_M=RUTA_ORIG.m;HITOS=RUTA_ORIG.hitos.slice();
   RUTA_NOMBRE=RUTA_ORIG.nombre;RUTA_FUENTE=RUTA_ORIG.fuente;RUTA_PROPIA=true;
   SITE.lat=RUTA_ORIG.lat;SITE.lon=RUTA_ORIG.lon;
-  $('#rutaNom').textContent='Trazado · Vía Las Flores';
-  $('#pieMapa').textContent='Planta esquemática sobre el trazado medido en Google Earth';
-  $('#chipRoute').textContent='Vía Las Flores · '+RUTA_M.toLocaleString('es-CO')+' m';
-  rutaInfo(Math.round(RUTA_M).toLocaleString('es-CO')+' m · Google Earth');
+  $('#rutaNom').textContent='Trazado · '+RUTA_ORIG.nombre;
+  $('#pieMapa').textContent='Planta sobre '+RUTA_ORIG.fuente;
+  $('#chipRoute').textContent='Trazado de ejemplo';
+  rutaInfo('ejemplo de '+Math.round(RUTA_M).toLocaleString('es-CO')+' m · cargue su KML o KMZ');
   dirty=true;render();
 });
 
+/* ===================== Exportar el diseño a Google Earth ===================== */
+/* metros locales → coordenadas, con el mismo marco del trazado cargado */
+function metrosAGeo(x,y){
+  const {lat0,lon0}=RUTA_ORIGEN;
+  const mx=111320*Math.cos(lat0*D), my=110540;
+  return {lat:lat0-y/my, lon:lon0+x/mx};
+}
+function kmlDelDiseno(){
+  const np=nPostes(), an=S.ancho/2, central=(S.disp==='central');
+  const esc2=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  let k='<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document>';
+  k+='<name>'+esc2((PROY.cod?PROY.cod+' · ':'')+(PROY.proy||RUTA_NOMBRE))+'</name>';
+  k+='<description>'+esc2('Diseño de alumbrado público. '+np+' postes cada '+S.sep+' m, luminarias de '+S.pot+
+      ' W a '+fmt(S.alt,1)+' m, disposición '+({uni:'unilateral',tres:'bilateral tresbolillo',par:'bilateral pareada',central:'andén central con doble brazo'}[S.disp])+
+      '. Generado por Alumbrado Público Vías — '+PROY.emp)+'</description>';
+  k+='<Style id="poste"><IconStyle><scale>0.8</scale><Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon></IconStyle>'+
+     '<LabelStyle><scale>0.7</scale></LabelStyle></Style>';
+  k+='<Style id="eje"><LineStyle><color>ff37a8c4</color><width>3</width></LineStyle></Style>';
+  k+='<Style id="luz"><LineStyle><color>ff7fe0ff</color><width>2</width></LineStyle></Style>';
+  // eje de la vía
+  let ejeC='';
+  RUTA.pts.forEach(pt=>{const g=metrosAGeo(pt.x,pt.y);ejeC+=g.lon.toFixed(7)+','+g.lat.toFixed(7)+',0 ';});
+  k+='<Placemark><name>Eje de la vía</name><styleUrl>#eje</styleUrl><LineString><tessellate>1</tessellate>'+
+     '<coordinates>'+ejeC.trim()+'</coordinates></LineString></Placemark>';
+  // postes y luminarias
+  k+='<Folder><name>Postes ('+np+')</name>';
+  for(let i=0;i<np;i++){
+    const sm=i*S.sep; if(sm>RUTA.len)break;
+    const a=alongRoute(sm);
+    const nx=Math.sin(a.ang), ny=-Math.cos(a.ang);
+    let despl;
+    if(central)despl=0;
+    else despl=((S.disp==='tres'&&i%2)?-1:1)*(an+0.6-S.avance);
+    const g=metrosAGeo(a.x+nx*despl, a.y+ny*despl);
+    const nom='P-'+String(i+1).padStart(3,'0');
+    k+='<Placemark><name>'+nom+'</name><styleUrl>#poste</styleUrl>'+
+       '<description>'+esc2('Abscisa K0+'+String(Math.round(sm)).padStart(3,'0')+' · '+
+         (POSTES[PRE.poste]?POSTES[PRE.poste].n:'poste')+' · altura de montaje '+fmt(S.alt,1)+' m · '+
+         (central?'2 luminarias':'1 luminaria')+' de '+S.pot+' W')+'</description>'+
+       '<Point><coordinates>'+g.lon.toFixed(7)+','+g.lat.toFixed(7)+',0</coordinates></Point></Placemark>';
+    // brazo y luminaria, como línea corta perpendicular a la vía
+    const lums=central?[-(S.sepAncho/2+S.avance),(S.sepAncho/2+S.avance)]:[despl+(despl>0?-1.4:1.4)];
+    lums.forEach(off=>{
+      const g1=metrosAGeo(a.x+nx*despl,a.y+ny*despl), g2=metrosAGeo(a.x+nx*off,a.y+ny*off);
+      k+='<Placemark><styleUrl>#luz</styleUrl><LineString><coordinates>'+
+         g1.lon.toFixed(7)+','+g1.lat.toFixed(7)+',0 '+g2.lon.toFixed(7)+','+g2.lat.toFixed(7)+',0'+
+         '</coordinates></LineString></Placemark>';
+    });
+  }
+  k+='</Folder></Document></kml>';
+  return k;
+}
+$('#kmlExport').addEventListener('click',async ()=>{
+  const txt=kmlDelDiseno();
+  const nombre=(PROY.cod||'alumbrado')+'_diseno.kml';
+  const blob=new Blob([txt],{type:'application/vnd.google-earth.kml+xml'});
+  try{
+    if(window.claude&&typeof window.claude.use==='function'){
+      const dl=await window.claude.use('downloads');
+      if(dl){await dl.save({filename:nombre,data:blob});rutaInfo('diseño exportado: '+nombre);return;}
+    }
+  }catch(e){rutaInfo('no se pudo exportar el diseño',true);return;}
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url;a.download=nombre;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),6000);
+  rutaInfo('diseño exportado: '+nombre+' · ábralo en Google Earth sobre la imagen real');
+});
+
 /* ===================== Asistente del proyecto ===================== */
-const DS_KEY_EMBEBIDA="sk-8438533856ea4e1886c77b9d01e6b18f";                 // la versión local se genera con la clave; la publicada va vacía
+const DS_KEY_EMBEBIDA="";                 // la versión local se genera con la clave; la publicada va vacía
 const CHAT={key:'',url:'https://api.deepseek.com',model:'deepseek-chat',online:false,hist:[],pensando:false};
 
 function chCargar(){
@@ -2210,6 +3204,29 @@ function chCargar(){
   }catch(e){CHAT.key=DS_KEY_EMBEBIDA;}
   $('#chKey').value=CHAT.key;$('#chUrl').value=CHAT.url;$('#chModel').value=CHAT.model;
   chEstado(CHAT.key?'listo':'local');
+}
+let CHAT_FIRMA='';
+function firmaProyecto(){return (CARGADO?'1':'0')+'|'+RUTA_NOMBRE+'|'+RUTA_M+'|'+RUTA_FUENTE;}
+function saludoChat(){
+  return CARGADO
+    ? ('Buenas. Soy el asistente de **'+RUTA_NOMBRE+'**'+(PROY.cod?' ('+PROY.cod+')':'')+'.\n\n'+
+       descripcionZona().texto+'\n\nPregúnteme por la parte eléctrica, la geográfica, el cumplimiento del RETILAP o el presupuesto.')
+    : ('Buenas. Todavía no hay proyecto cargado: lo que ve es un trazado de ejemplo.\n\n'+
+       'Cargue el **KML o KMZ** de la vía y vuelvo a presentarme con los datos reales del corredor.');
+}
+/* Si cambia el proyecto, la conversación anterior deja de servir */
+function sincronizarChat(){
+  const f=firmaProyecto();
+  if(f===CHAT_FIRMA)return;
+  const habia=CHAT_FIRMA!=='';
+  CHAT_FIRMA=f;
+  $('#chProy').textContent=CARGADO?(RUTA_NOMBRE+' · '+RUTA_M.toLocaleString('es-CO')+' m'):'sin proyecto cargado';
+  CHAT.hist=[];
+  const cont=$('#chMsgs');
+  if(cont.children.length){
+    cont.innerHTML='';
+    chAdd(saludoChat(),'bot',habia?'proyecto actualizado':null);
+  }
 }
 function chEstado(modo){
   const e=$('#chEstado');
@@ -2225,16 +3242,24 @@ function contextoProyecto(){
   return {
     proyecto:PROY.proy,codigo:PROY.cod,empresa:PROY.emp,responsable:PROY.ela,municipio:PROY.mun,
     cliente:PROY.cli||'no registrado',contrato:PROY.con||'no registrado',revision:PROY.rev,
-    via:RUTA_NOMBRE, fuente_trazado:RUTA_FUENTE,
+    via:RUTA_NOMBRE, fuente_trazado:RUTA_FUENTE, proyecto_cargado:CARGADO,
+    contexto_geografico:descripcionZona().texto, ubicacion_referencia:refGeografica(SITE.lat,SITE.lon).texto,
     longitud_m:RUTA_M,coordenadas:fmt(SITE.lat,4)+'° N, '+fmt(Math.abs(SITE.lon),4)+'° O',
-    hitos:'caserío de Las Flores, I.E.R. Adolfo Antonio, cementerio, empalme con la Troncal del Caribe',
+    hitos:HITOS.map(h=>h.l).join(', '),
     postes:nPostes(),luminarias:nLum(),potencia_luminaria_W:S.pot,flujo_lm:Math.round(flujoLum(S)),
+    eficacia_lm_W:S.efic,
     interdistancia_m:S.sep,altura_m:S.alt,relacion_SH:+fmt(S.sep/S.alt,2).replace(',','.'),
-    disposicion:{uni:'unilateral',tres:'bilateral tresbolillo',par:'bilateral pareada'}[S.disp],
+    disposicion:{uni:'unilateral',tres:'bilateral tresbolillo',par:'bilateral pareada',central:'andén central con doble brazo'}[S.disp],
+    tipo_poste:POSTES[PRE.poste]?POSTES[PRE.poste].n:'',
+    naturaleza:PRE.publico?'proyecto público (con cargas de ley)':'proyecto privado',
+    fotometria:IES?('archivo IES del fabricante · '+Math.round(IES.flujo).toLocaleString('es-CO')+' lm'):'modelo genérico',
     ancho_calzada_m:S.ancho,carriles:m.carriles,avance_m:S.avance,inclinacion_grados:S.incl,
+    anden_central:(S.disp==='central')?{ancho_m:S.sepAncho,alto_m:S.sepAlto}:null,
     factor_mantenimiento:S.fm,pavimento:S.pav,q0:S.q0,
-    clase_retilap:S.clase,descripcion_clase:CLASES[S.clase].via,
+    norma_aplicada:NORMAS[S.norma].nom+' · '+NORMAS[S.norma].ref,
+    clase_retilap:S.clase,descripcion_clase:(CLASES[S.clase]||CLASES.M4).via,
     criterio:req.porL?'luminancia':'iluminancia',
+    niveles_ajustados_a_mano:req.manual,
     exigido:{E_lux:+req.Eref.toFixed(1),L_cd_m2:req.L,U0:req.UoE,Ul:req.Ul,TI_max:req.TI,SR:req.SR},
     obtenido:{E_media_lux:+m.med.toFixed(1),E_min_lux:+m.min.toFixed(1),E_max_lux:+m.max.toFixed(1),
       L_cd_m2:+m.L.toFixed(2),U0:+m.uo.toFixed(2),Ul:+m.ul.toFixed(2),SR:+m.sr.toFixed(2),TI_pct:+m.ti.toFixed(1),
@@ -2256,14 +3281,15 @@ function contextoProyecto(){
       costo_por_km_COP:Math.round(P.bruto/Math.max(RUTA.len/1000,.01)),
       costo_por_luminaria_COP:Math.round(P.bruto/Math.max(P.nl,1)),
       conductor:'2x'+P.ci.cond+' AWG Al',caida_tension_pct:+P.ci.caida1.toFixed(1),
+      cargas_de_ley:P.cargas.map(cg=>cg.n+' '+cg.pct+' %: '+money(cg.total)),
       puntos_alimentacion:P.ci.puntos,transformadores:P.ci.trafos,kVA_cada_uno:P.ci.kva,
       kits_SPT:P.nspt,nota:'estimado de referencia, no reemplaza cotizaciones'};})(),
     fecha_analisis:new Date($('#date').value+'T12:00:00').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'})
   };
 }
 const SISTEMA=
- 'Eres el asistente técnico del proyecto de alumbrado público de la vía Las Flores (Dibulla, La Guajira, Colombia), '+
- 'de la firma AB Creaciones Eléctricas S.A.S. Atiendes al ingeniero responsable y también a clientes y comunidad, '+
+ 'Eres el asistente técnico de un proyecto de alumbrado público vial en Colombia, de la firma AB Creaciones Eléctricas S.A.S. '+
+ 'La vía, su longitud y su ubicación vienen en el JSON de contexto: úsalas siempre, nunca supongas otra ubicación. Atiendes al ingeniero responsable y también a clientes y comunidad, '+
  'así que explicas en español claro, con tono cordial y profesional, y traduces los términos técnicos cuando hablas con alguien no especializado. '+
  'Respondes SOLO con los datos del proyecto que se te entregan en el JSON de contexto y con conocimiento general de ingeniería eléctrica, '+
  'luminotecnia y del RETILAP colombiano. Si te preguntan algo que no está en el contexto (precios de obra, cronograma, contratistas, predios), '+
@@ -2301,7 +3327,7 @@ function respuestaLocal(q){
   const tiene=(...k)=>k.some(w=>t.indexOf(w)>=0);
   const $$=n=>n.toLocaleString('es-CO');
   if(tiene('donde','ubica','ubicacion','mapa','coordenada','geografic','municipio','llegar'))
-    return 'El proyecto está en **'+c.municipio+'**, sobre la **'+c.via+'**.\n\n'+
+    return 'El proyecto está sobre **'+c.via+'**'+(c.ubicacion_referencia?', '+c.ubicacion_referencia:'')+'.\n\n'+
       '- Longitud intervenida: **'+$$(c.longitud_m)+' m**\n- Coordenadas de referencia: '+c.coordenadas+
       '\n- Puntos de referencia sobre el corredor: '+c.hitos;
   if(tiene('largo','longitud','distancia','kilometro','metros de via'))
@@ -2398,12 +3424,7 @@ function chEnviar(){
 $('#chatFab').addEventListener('click',()=>{
   const p=$('#chatPanel');p.classList.toggle('open');
   if(p.classList.contains('open')){
-    if(!$('#chMsgs').children.length){
-      chAdd('Buenas. Soy el asistente del proyecto **'+PROY.cod+'** — alumbrado público de la vía Las Flores, en Dibulla.\n\n'+
-        'Puedo explicarle la parte eléctrica y la geográfica: dónde va, cuántos postes lleva, a qué hora encienden, '+
-        'qué niveles de iluminación entrega y qué dice el RETILAP. Pregúnteme con confianza, o toque una de las sugerencias.',
-        'bot');
-    }
+    if(!$('#chMsgs').children.length){ CHAT_FIRMA=firmaProyecto(); chAdd(saludoChat(),'bot'); }
     $('#chIn').focus();
   }
 });
@@ -2423,6 +3444,9 @@ $('#chSave').addEventListener('click',()=>{
   chEstado(CHAT.key?'listo':'local');
   chConsultar('Prueba de conexión: salúdame en una frase y dime el código del proyecto.');
 });
+$('#chReset').addEventListener('click',()=>{
+  CHAT.hist=[];$('#chMsgs').innerHTML='';chAdd(saludoChat(),'bot');$('#chCfg').classList.remove('open');
+});
 $('#chClear').addEventListener('click',()=>{
   CHAT.key='';$('#chKey').value='';
   try{localStorage.removeItem('ap_dskey');}catch(e){}
@@ -2438,26 +3462,86 @@ bind('#alt',v=>{S.alt=+v;$('#altV').textContent=fmt(+v,1)+' m';},true);
 bind('#ancho',v=>{S.ancho=+v;$('#anchoV').textContent=fmt(+v,1)+' m';},true);
 bind('#avance',v=>{S.avance=+v;$('#avanceV').textContent=fmt(+v,1)+' m';},true);
 bind('#incl',v=>{S.incl=+v;$('#inclV').textContent=v+'°';},true);
+bind('#sepAncho',v=>{S.sepAncho=+v;$('#sepAnchoV').textContent=fmt(+v,1)+' m';},true);
+bind('#sepAlto',v=>{S.sepAlto=+v;$('#sepAltoV').textContent=fmt(+v,2)+' m';},true);
 bind('#umb',v=>{S.umb=+v;$('#umbV').textContent=v+' lux';},true);
 bind('#fm',v=>{S.fm=+v;$('#fmV').textContent=fmt(+v,2);},true);
 bind('#tarifa',v=>{S.tarifa=+v;$('#tarifaV').textContent='$ '+(+v).toLocaleString('es-CO')+' /kWh';},true);
-$('#disp').addEventListener('change',e=>{S.disp=e.target.value;dirty=true;render();});
+$('#disp').addEventListener('change',e=>{S.disp=e.target.value;
+  $('#ctlSeparador').hidden=(S.disp!=='central');
+  dirty=true;render();});
 $('#dim').addEventListener('change',e=>{S.dim=e.target.checked;dirty=true;render();});
 $('#lamp').addEventListener('change',e=>{const[a,b]=e.target.value.split(',').map(Number);S.efic=a;S.rend=b;dirty=true;render();});
 $('#pav').addEventListener('change',e=>{const[p,q]=e.target.value.split(',');S.pav=p;S.q0=+q;
-  $('#pavV').textContent=p+' · q₀ '+fmt(+q,2);render();});
-$('#crit').addEventListener('change',e=>{S.crit=e.target.value;render();});
+  $('#pavV').textContent=p+' · q₀ '+fmt(+q,2);pintarNiveles();render();});
+$('#crit').addEventListener('change',e=>{S.crit=S.critPref=e.target.value;render();});
 $('#tipoVia').addEventListener('change',e=>{setClase(e.target.value);});
-$('#classLine').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setClase(b.dataset.c);});
+$('#classLine').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!b.hidden)setClase(b.dataset.c);});
+
+/* ---- Norma aplicable ---- */
+$('#norma').addEventListener('change',e=>{setNorma(e.target.value);});
+function setNorma(n){
+  if(!NORMAS[n])n='2024';
+  S.norma=n;
+  CLASES=NORMAS[n].clases; ILUM=NORMAS[n].ilum;
+  $('#norma').value=n;
+  $('#retHint').textContent=NORMAS[n].nom+' · '+NORMAS[n].ref;
+  /* M6 sólo existe en la tabla de 2024 */
+  const hayM6=!!CLASES.M6;
+  const bM6=document.querySelector('#classLine button[data-c="M6"]');
+  if(bM6)bM6.hidden=!hayM6;
+  const oM6=document.querySelector('#tipoVia option[value="M6"]');
+  if(oM6)oM6.hidden=!hayM6;
+  if(!CLASES[S.clase])S.clase='M4';
+  setClase(S.clase);
+}
 function setClase(c){
+  if(!CLASES[c])c='M4';
   S.clase=c;
   document.querySelectorAll('#classLine button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.c===c)));
   $('#tipoVia').value=c;
-  const soloL=(c==='M1'||c==='M2');
-  $('#crit').disabled=soloL;
-  if(soloL){$('#crit').value='L';S.crit='L';}
+  /* sólo se puede verificar por iluminancia si hay un nivel de iluminancia exigido
+     (tabla de la norma o valor escrito por el proyectista) */
+  const o=ovrActual();
+  const hayE = !!ILUM[c] || (o.E!==undefined&&o.E!==null&&isFinite(o.E));
+  $('#crit').disabled=!hayE;
+  if(!hayE){$('#crit').value='L';S.crit='L';}
+  else {S.crit=S.critPref||'E';$('#crit').value=S.crit;}
+  pintarNiveles();
   render();
 }
+
+/* ---- Niveles exigidos, editables ---- */
+const CAMPOS=[['exL','L',2],['exUo','Uo',2],['exUl','Ul',2],['exTI','TI',0],['exSR','SR',2],['exE','E',1]];
+function pintarNiveles(){
+  const c=CLASES[S.clase]||CLASES.M4, il=ILUM[S.clase], o=ovrActual();
+  $('#nivClase').textContent=S.clase;
+  const base={L:c.L,Uo:c.Uo,Ul:c.Ul,TI:c.TI,SR:c.SR,E:il?il[S.pav]:null};
+  CAMPOS.forEach(([id,k])=>{
+    const el=$('#'+id); if(!el)return;
+    const man=(k in o)&&o[k]!==undefined&&o[k]!==null&&isFinite(o[k]);
+    el.value = man ? o[k] : (base[k]===null||base[k]===undefined ? '' : base[k]);
+    el.placeholder = (base[k]===null||base[k]===undefined) ? 'no exigido' : String(base[k]);
+    el.classList.toggle('man',!!man);
+  });
+  const r=requisitos();
+  $('#nivTip').innerHTML = NORMAS[S.norma].vig+' '+
+    (r.derivado
+      ? 'Esta norma fija la clase por <b>luminancia</b>; la iluminancia mostrada se deriva de E = L / q₀ ('+fmt(r.Eref,1)+' lux con q₀ '+fmt(S.q0,2)+'). Si su copia del reglamento trae un nivel de iluminancia para '+S.clase+', escríbalo y la verificación pasa a ese criterio.'
+      : 'Nivel de iluminancia '+(('E' in o&&o.E)?'escrito por el proyectista':'tomado de la tabla 510.2.1.b para pavimento '+S.pav)+'.')+
+    (hayOvr()?' <b>Hay valores ajustados a mano</b>; quedan registrados en el informe.':' Cualquier casilla puede editarse: el diseño se verifica contra el valor que quede escrito.');
+}
+CAMPOS.forEach(([id,k])=>{
+  const el=$('#'+id); if(!el)return;
+  el.addEventListener('change',()=>{
+    const key=ovrKey(); OVR[key]=OVR[key]||{};
+    const t=el.value.trim();
+    if(t===''){delete OVR[key][k]; if(!Object.keys(OVR[key]).length)delete OVR[key];}
+    else OVR[key][k]=+t;
+    setClase(S.clase);
+  });
+});
+$('#nivReset').addEventListener('click',()=>{delete OVR[ovrKey()];setClase(S.clase);});
 $('#date').addEventListener('change',e=>{const d=new Date(e.target.value+'T12:00:00');if(isNaN(d))return;
   S.doy=Math.round((d-new Date(d.getFullYear(),0,0))/864e5);dirty=true;render();});
 $('#fixBtn').addEventListener('click',()=>{
@@ -2514,13 +3598,15 @@ window.addEventListener('resize',()=>render());
   $('#umbV').textContent=S.umb+' lux';$('#fmV').textContent=fmt(S.fm,2);
   $('#tarifaV').textContent='$ '+S.tarifa.toLocaleString('es-CO')+' /kWh';
   $('#pavV').textContent=S.pav+' · q₀ '+fmt(S.q0,2);
-  $('#chipRoute').textContent='Vía Las Flores · '+RUTA_M.toLocaleString('es-CO')+' m';
-  rutaInfo(Math.round(RUTA_M).toLocaleString('es-CO')+' m · Google Earth');
+  $('#sepAnchoV').textContent=fmt(S.sepAncho,1)+' m';$('#sepAltoV').textContent=fmt(S.sepAlto,2)+' m';
+  $('#ctlSeparador').hidden=(S.disp!=='central');
+  $('#chipRoute').textContent='Trazado de ejemplo';
+  rutaInfo('ejemplo de '+Math.round(RUTA_M).toLocaleString('es-CO')+' m · cargue su KML o KMZ');
   const s0=schedule(S.doy);S.hour=(s0.ocaso+0.6)%24;$('#hour').value=S.hour;
   cargarFicha();
   cargarPrecios();
   chCargar();
-  setClase('M4');
+  setNorma(S.norma);
 })();
 })();
 </script>
